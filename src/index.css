@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+html, body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+
+  --color-brand-orange: #ff5e00;
+  --color-brand-pink: #ff2a85;
+  --color-brand-purple: #8a2be2;
+  --color-brand-dark: #0a0712;
+  --color-brand-darker: #030106;
+  --color-brand-glass: rgba(10, 7, 18, 0.75);
+
+  --animate-spin-slow: spin 20s linear infinite;
+  --animate-pulse-slow: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2.5s infinite;
+  --animate-waveform: waveform 0.8s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.25s ease-out forwards;
+  --animate-slide-up: slide-up 0.25s ease-out forwards;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.02); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes waveform {
+    0%, 100% { transform: scaleY(0.2); }
+    50% { transform: scaleY(1); }
+  }
+}
+
+/* Custom Glow Classes */
+.glow-orange { filter: drop-shadow(0 0 15px rgba(255, 94, 0, 0.45)); }
+.glow-pink { filter: drop-shadow(0 0 15px rgba(255, 42, 133, 0.45)); }
+.glow-purple { filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.45)); }
+
+/* Custom Gradient Utilities */
+.gradient-text {
+  background: linear-gradient(135deg, #ff5e00 0%, #ff2a85 50%, #8a2be2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #ff5e00 0%, #ff2a85 50%, #8a2be2 100%);
+}
+
+.gradient-border-glow {
+  position: relative;
+}
+.gradient-border-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, #ff5e00, #ff2a85, #8a2be2);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #06040a;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #f97316, #ec4899);
+  border-radius: 99px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Dashboard Pattern Grid */
+.dashboard-grid {
+  background-size: 30px 30px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* High-Fidelity 4K HD Mockup rendering overrides */
+.mockup-container {
+  box-shadow: 
+    0 25px 50px -12px rgba(138, 43, 226, 0.35),
+    0 0 50px rgba(255, 42, 133, 0.2) !important;
+}
+
+/* Elevate small font sizes to prevent browser subpixel blur */
+.mockup-container .text-\[5px\] { font-size: 8px !important; }
+.mockup-container .text-\[6px\] { font-size: 9.5px !important; }
+.mockup-container .text-\[6\.5px\] { font-size: 10px !important; }
+.mockup-container .text-\[7px\] { font-size: 10.5px !important; }
+.mockup-container .text-\[7\.5px\] { font-size: 11px !important; }
+.mockup-container .text-\[8px\] { font-size: 12px !important; }
+.mockup-container .text-\[8\.5px\] { font-size: 12.5px !important; }
+.mockup-container .text-\[9px\] { font-size: 13px !important; }
+.mockup-container .text-\[9\.5px\] { font-size: 13.5px !important; }
+.mockup-container .text-\[10px\] { font-size: 14px !important; }
+.mockup-container .text-\[10\.5px\] { font-size: 14.5px !important; }
+.mockup-container .text-\[11px\] { font-size: 15px !important; }
+.mockup-container .text-\[11\.5px\] { font-size: 15.5px !important; }
+.mockup-container .text-\[12px\] { font-size: 16px !important; }
+.mockup-container .text-xs { font-size: 14px !important; }
+
+/* Improve gray text contrast to look crisp */
+.mockup-container .text-gray-400 { color: #e5e7eb !important; }
+.mockup-container .text-gray-500 { color: #9ca3af !important; }
+
+/* Sharpen mockup border rendering */
+.mockup-container .border-white\/5 { border-color: rgba(255, 255, 255, 0.15) !important; }
+.mockup-container .border-white\/10 { border-color: rgba(255, 255, 255, 0.22) !important; }
