@@ -291,7 +291,7 @@ export default function Features() {
                     <span className="text-[10px] font-bold font-mono text-white">
                       {escrowBooked ? '1,500 INR [LOCKED]' : '0 INR [PENDING]'}
                     </span>
-                  </div>
+                  </div>  
 
                   <button 
                     onClick={handleEscrowInteraction}

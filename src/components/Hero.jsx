@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
-import { playDemoSound } from '../utils/audio';
+import React, { useState, useRef, useEffect } from 'react';
+import { playDemoSound, playCustomStudioVoice, playClickSound } from '../utils/audio';
 
 export default function Hero({ onBookCreator }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isAnimated, setIsAnimated] = useState(false);
+  const [payoutPopups, setPayoutPopups] = useState([]);
+  const [creatorPopups, setCreatorPopups] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
+  // Post interactions
+  const [liked, setLiked] = useState(false);
+  const [reposted, setReposted] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [shareToast, setShareToast] = useState(false);
+  const [doubleTapHeart, setDoubleTapHeart] = useState(false);
+  const likeCount = liked ? 4301 : 4300;
+  const commentCount = 238;
+  const handleDoubleTap = () => {
+    setLiked(true);
+    setDoubleTapHeart(true);
+    setTimeout(() => setDoubleTapHeart(false), 900);
+  };
+  const headlineRef = useRef(null);
+  const phoneRef = useRef(null);
 
   const handlePlayVoice = () => {
     setIsPlaying(true);
@@ -10,51 +30,277 @@ export default function Hero({ onBookCreator }) {
     setTimeout(() => setIsPlaying(false), 600);
   };
 
+  // Headline Mouse move spotlight effect
+  const handleHeadlineMouseMove = (e) => {
+    if (!headlineRef.current) return;
+    const rect = headlineRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setSpotlightPos({ x, y });
+  };
+
+  // Click on "Creators" word -> Trigger avatar burst & chime
+  const handleCreatorsClick = (e) => {
+    e.stopPropagation();
+    playDemoSound(523.25, 0.35, 'sine'); // C5 tone
+    const id = Date.now();
+    const avatars = ['/avatars/sg.png', '/avatars/sk.png', '/avatars/nt.png', '/avatars/creator.png'];
+    const newPopup = {
+      id,
+      img: avatars[Math.floor(Math.random() * avatars.length)],
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY - 20
+    };
+    setCreatorPopups(prev => [...prev, newPopup]);
+    setTimeout(() => {
+      setCreatorPopups(prev => prev.filter(p => p.id !== id));
+    }, 1800);
+  };
+
+  // Click on "Monetize Day 1." word -> Trigger cash payout burst & studio audio
+  const handleMonetizeClick = (e) => {
+    e.stopPropagation();
+    playCustomStudioVoice();
+    const id = Date.now();
+    const amounts = ['+ ₹ 15,000 Escrow', '+ ₹ 5,000 Shoutout', '+ ₹ 25,000 Deal', '+ ₹ 10,000 Booking'];
+    const newPopup = {
+      id,
+      text: amounts[Math.floor(Math.random() * amounts.length)],
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY - 20
+    };
+    setPayoutPopups(prev => [...prev, newPopup]);
+    setTimeout(() => {
+      setPayoutPopups(prev => prev.filter(p => p.id !== id));
+    }, 2000);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsAnimated(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (phoneRef.current) {
+      observer.observe(phoneRef.current);
+    }
+
+    return () => {
+      if (phoneRef.current) {
+        observer.unobserve(phoneRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <section className="relative pt-36 pb-24 md:pt-44 md:pb-36 overflow-hidden">
-      {/* Glowing Ambient Lights */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-orange/15 rounded-full blur-[120px] animate-pulse-slow"></div>
-      <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[150px] animate-pulse-slow"></div>
-      
-      <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-        {/* Left Narrative Column */}
-        <div className="lg:col-span-7 text-center lg:text-left space-y-8">
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-white/5 rounded-full border border-white/10">
-            <span className="w-2 h-2 rounded-full bg-brand-pink animate-ping"></span>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-300">Made in India â€¢ Omnexia Technologies PVT L.T.D.</span>
+    <section className="relative pt-36 pb-24 md:pt-44 md:pb-36 overflow-hidden select-none">
+      {/* Glowing Ambient Lights (Dynamic shifting background) */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-r from-brand-orange/20 via-brand-pink/20 to-brand-purple/20 rounded-full blur-[140px] animate-pulse-slow pointer-events-none"></div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10 flex flex-col items-center text-center space-y-16">
+
+        {/* 🚀 Top Centered Narrative Header (Ultra-Premium & Animated) */}
+        <div className="w-full max-w-4xl text-center space-y-8 flex flex-col items-center">
+
+          {/* Top Live Badge */}
+          <div className="hero-entrance-1 inline-flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/15 backdrop-blur-xl shadow-xl hover:border-brand-pink/40 transition-all duration-300 group cursor-pointer">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10.5px] font-extrabold uppercase tracking-widest text-gray-200">
+              Made in India • Omnexia Technologies PVT L.T.D.
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-brand-pink/20 border border-brand-pink/30 text-brand-pink text-[9px] font-black tracking-wider uppercase">
+              LIVE V2.4
+            </span>
           </div>
-          
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-outfit leading-tight tracking-tight text-white">
-            Where Creators <br />
-            <span className="gradient-text">Monetize Day 1.</span>
-          </h1>
-          
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl leading-relaxed font-light">
-            Soosial is India's premium, high-security social architecture built to empower creators. Enjoy absolute privacy with no monthly database leaks. Monetize from Day 1 through direct business-to-creator bookings (SOOS videos, stories, shoutouts) and curate your intellect with our non-addictive Persona stream.
+
+          {/* 🌟 INSANELY INTERACTIVE HEADLINE CONTAINER 🌟 */}
+          <div
+            ref={headlineRef}
+            onMouseMove={handleHeadlineMouseMove}
+            className="hero-entrance-2 relative w-full max-w-3xl p-6 sm:p-8 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md overflow-hidden transition-all duration-300 hover:border-white/20 group"
+            style={{
+              backgroundImage: `radial-gradient(400px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(255, 42, 133, 0.18), transparent 70%)`
+            }}
+          >
+            {/* Ambient Corner Sparkles */}
+            <div className="absolute top-2 left-3 text-xs text-brand-pink/40 animate-pulse pointer-events-none">✦</div>
+            <div className="absolute bottom-2 right-4 text-xs text-brand-orange/40 animate-pulse pointer-events-none" style={{ animationDelay: '1s' }}>✦</div>
+
+            {/* Click Instructions Hint Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/10 text-[9.5px] text-gray-400 font-medium mb-3 opacity-80 group-hover:opacity-100 transition-opacity">
+              <i className="fa-solid fa-hand-pointer text-pink-400 animate-bounce"></i>
+              <span>Click words below for instant audio & escrow demo</span>
+            </div>
+
+            {/* Main Interactive Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-outfit leading-tight tracking-tight text-white drop-shadow-2xl">
+              Where{' '}
+              <span
+                onClick={handleCreatorsClick}
+                className="relative inline-flex items-center px-3.5 py-1 rounded-2xl bg-white/10 border border-white/20 hover:border-pink-500/60 hover:bg-pink-500/15 hover:scale-105 transition-all cursor-pointer group/creator"
+                title="Click to test Creator Avatar pop!"
+              >
+                <span className="text-white">Creators</span>
+                <span className="ml-2 text-[10px] bg-pink-500 text-white font-mono px-2 py-0.5 rounded-full shadow-md animate-pulse">
+                  👥 Tap
+                </span>
+              </span>
+              <br />
+
+              {/* 🌟 ULTRA-CRISP & VIVID "MONETIZE DAY 1." HERO TITLE 🌟 */}
+              <span
+                onClick={handleMonetizeClick}
+                className="relative inline-block mt-2 cursor-pointer group/monetize hover:scale-[1.03] transition-transform duration-300"
+                title="Click to simulate instant INR Escrow Payout!"
+              >
+                {/* Backlight Neon Glow behind text (ensures zero WebKit clip bugs while giving max glow) */}
+                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/40 via-pink-500/40 to-purple-600/40 blur-2xl opacity-70 group-hover/monetize:opacity-100 transition-opacity pointer-events-none"></span>
+
+                {/* Crystal Clear Radiant Text */}
+                <span className="relative z-10 block text-5xl sm:text-7xl lg:text-8xl font-black font-outfit tracking-tight bg-gradient-to-r from-orange-400 via-pink-500 to-purple-400 bg-clip-text text-transparent pb-1">
+                  Monetize Day 1.
+                </span>
+
+                {/* Floating Tap Prompt Badge */}
+                <span className="absolute -top-3.5 -right-6 text-[10.5px] sm:text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black font-mono px-2.5 py-1 rounded-full shadow-2xl border border-emerald-300/50 animate-bounce flex items-center gap-1">
+                  <i className="fa-solid fa-coins text-yellow-300"></i>
+                  <span>Tap ₹ Demo</span>
+                </span>
+              </span>
+            </h1>
+
+            {/* Floating Payout Popups (+₹15,000) when clicking Monetize */}
+            {payoutPopups.map(popup => (
+              <div
+                key={popup.id}
+                className="absolute z-50 pointer-events-none animate-float-up text-emerald-400 bg-black/90 border border-emerald-500/50 px-3 py-1.5 rounded-full text-xs font-black font-mono shadow-2xl flex items-center gap-1.5"
+                style={{ left: `${popup.x}px`, top: `${popup.y}px` }}
+              >
+                <i className="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
+                <span>{popup.text}</span>
+              </div>
+            ))}
+
+            {/* Floating Avatar Popups when clicking Creators */}
+            {creatorPopups.map(popup => (
+              <div
+                key={popup.id}
+                className="absolute z-50 pointer-events-none animate-float-up bg-pink-500/90 border border-white/40 p-1 rounded-full shadow-2xl flex items-center justify-center"
+                style={{ left: `${popup.x}px`, top: `${popup.y}px` }}
+              >
+                <img src={popup.img} className="w-8 h-8 rounded-full object-cover border border-white" alt="Avatar" />
+              </div>
+            ))}
+
+            {/* Interactive Niche Switcher Bar */}
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-5">
+              {[
+                { label: '🔥 All Features', mode: 'All' },
+                { label: '🎥 SOOS Reels', mode: 'Reels' },
+                { label: '🎙️ Vocal Feed', mode: 'Voice' },
+                { label: '💼 Day 1 Escrow', mode: 'Escrow' },
+                { label: '🛡️ Data Shield', mode: 'Shield' }
+              ].map(item => (
+                <button
+                  key={item.mode}
+                  onClick={() => {
+                    playClickSound();
+                    setActiveFilter(item.mode);
+                  }}
+                  className={`px-3 py-1 rounded-full text-[10.5px] font-bold transition-all duration-300 cursor-pointer ${activeFilter === item.mode
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/25 scale-105'
+                      : 'bg-white/5 hover:bg-white/15 text-gray-300 border border-white/10'
+                    }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+          </div>
+
+          {/* Subtitle Description */}
+          <p className="hero-entrance-3 text-gray-300 text-base sm:text-xl max-w-3xl leading-relaxed font-light mx-auto">
+            Soosial is India's premium, high-security social architecture built to empower creators. Enjoy absolute privacy with zero database leaks. Monetize from Day 1 through direct business-to-creator bookings (SOOS videos, stories, shoutouts) and curate your intellect with our non-addictive Persona stream.
           </p>
 
-          {/* Premium Value Points Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 text-left max-w-xl mx-auto lg:mx-0">
-            <div className="flex items-start gap-3">
-              <span className="text-brand-orange text-lg mt-0.5"><i className="fa-solid fa-shield-halved"></i></span>
-              <div>
-                <h4 className="font-bold text-white text-sm font-outfit">Sovereign Data Shield</h4>
-                <p className="text-xs text-gray-400 mt-1">100% local hosting within India protecting your chats & files from dark web leaks.</p>
-              </div>
+          {/* Interactive Live Metrics Ticker */}
+          <div className="hero-entrance-3 flex flex-wrap items-center justify-center gap-3 py-1">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md hover:bg-white/10 transition-colors">
+              <span className="text-emerald-400 font-mono">₹ 100%</span> Escrow Protected
             </div>
-            <div className="flex items-start gap-3">
-              <span className="text-brand-pink text-lg mt-0.5"><i className="fa-solid fa-microphone"></i></span>
-              <div>
-                <h4 className="font-bold text-white text-sm font-outfit">Infinite Voice Comments</h4>
-                <p className="text-xs text-gray-400 mt-1">Comment using high-fidelity vocal notes. Express real human sentiment without limits.</p>
-              </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md hover:bg-white/10 transition-colors">
+              <span className="text-brand-orange">🛡️ 0 Leak</span> Indian Server Hosting
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md hover:bg-white/10 transition-colors">
+              <span className="text-brand-pink">⚡ Instant</span> Vocal Feed Reactions
             </div>
           </div>
 
-          {/* App Store Downloads */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-6" id="download-assets">
+          {/* Premium Interactive Value Points Grid */}
+          <div className="hero-entrance-4 grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2 text-left max-w-2xl mx-auto w-full">
+
+            {/* Card 1: Sovereign Shield */}
+            <div className="group relative flex items-start gap-3.5 bg-gradient-to-br from-white/10 to-white/5 p-4 rounded-2xl border border-white/15 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-brand-orange/50 hover:shadow-[0_10px_30px_rgba(255,94,0,0.25)] cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-brand-orange/20 border border-brand-orange/40 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <i className="fa-solid fa-shield-halved text-brand-orange text-lg"></i>
+              </div>
+              <div>
+                <h4 className="font-bold text-white text-sm font-outfit flex items-center gap-1.5">
+                  Sovereign Data Shield
+                  <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Active</span>
+                </h4>
+                <p className="text-xs text-gray-300 mt-1 font-light leading-relaxed">100% local hosting within India protecting your chats & files from dark web leaks.</p>
+              </div>
+            </div>
+
+            {/* Card 2: Voice Comments with Interactive Audio Test */}
+            <div className="group relative flex items-start gap-3.5 bg-gradient-to-br from-white/10 to-white/5 p-4 rounded-2xl border border-white/15 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-brand-pink/50 hover:shadow-[0_10px_30px_rgba(255,42,133,0.25)] cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-brand-pink/20 border border-brand-pink/40 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <i className="fa-solid fa-microphone text-brand-pink text-lg"></i>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-white text-sm font-outfit">Infinite Voice Comments</h4>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlayVoice();
+                    }}
+                    className="px-2 py-0.5 rounded-md bg-brand-pink/20 hover:bg-brand-pink/40 border border-brand-pink/40 text-white text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                  >
+                    <i className={`fa-solid ${isPlaying ? 'fa-volume-high animate-bounce' : 'fa-play'}`}></i> Test
+                  </button>
+                </div>
+                <p className="text-xs text-gray-300 mt-1 font-light leading-relaxed">Comment using high-fidelity vocal notes. Express real human sentiment without limits.</p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* App Store Downloads & Direct CTA */}
+          <div className="hero-entrance-4 flex flex-wrap items-center justify-center gap-4 pt-4" id="download-assets">
+
+            {/* Direct Booking CTA */}
+            <button
+              onClick={() => onBookCreator && onBookCreator('Ganesh KGP', '1x Dedicated SOOS', 15000)}
+              className="px-6 py-3.5 rounded-xl text-white font-black text-sm transition-all duration-300 hover:scale-105 cursor-pointer flex items-center gap-2.5 shadow-2xl relative overflow-hidden group border border-white/20"
+              style={{ background: 'linear-gradient(135deg, #ff2a85 0%, #ff5e00 50%, #8a2be2 100%)', boxShadow: '0 10px 30px rgba(255,42,133,0.4)' }}
+            >
+              <i className="fa-solid fa-bolt text-yellow-300 animate-pulse"></i>
+              <span>Book Creator Escrow</span>
+              <i className="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+            </button>
+
             {/* Google Play Store */}
-            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-3 bg-brand-dark hover:bg-black border border-white/10 hover:border-brand-orange/50 rounded-xl px-5 py-3 transition-all transform hover:-translate-y-1">
+            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-3 bg-brand-dark hover:bg-black border border-white/15 hover:border-brand-orange/60 rounded-xl px-5 py-3 transition-all transform hover:-translate-y-1 shadow-xl">
               <i className="fa-brands fa-google-play text-2xl text-brand-orange"></i>
               <div className="text-left">
                 <span className="block text-[9px] uppercase tracking-wider text-gray-400 font-bold">Acquire on</span>
@@ -63,247 +309,487 @@ export default function Hero({ onBookCreator }) {
             </a>
 
             {/* Apple App Store */}
-            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-3 bg-brand-dark hover:bg-black border border-white/10 hover:border-brand-purple/50 rounded-xl px-5 py-3 transition-all transform hover:-translate-y-1">
+            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-3 bg-brand-dark hover:bg-black border border-white/15 hover:border-brand-purple/60 rounded-xl px-5 py-3 transition-all transform hover:-translate-y-1 shadow-xl">
               <i className="fa-brands fa-apple text-2xl text-brand-pink"></i>
               <div className="text-left">
                 <span className="block text-[9px] uppercase tracking-wider text-gray-400 font-bold">Download from</span>
                 <span className="font-outfit font-black text-sm text-white">App Store</span>
               </div>
             </a>
+
           </div>
+
         </div>
 
-        {/* Right Phone Mockup Column */}
-        <div className="lg:col-span-5 flex justify-center items-center relative">
-          {/* Floating geometric elements mimicking logo nodes */}
-          <div className="absolute -top-12 -left-12 w-28 h-28 bg-gradient-to-br from-brand-orange to-brand-pink rounded-full blur-md opacity-25 animate-float"></div>
-          <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gradient-to-br from-brand-pink to-brand-purple rounded-full blur-md opacity-25 animate-float" style={{ animationDelay: '2.5s' }}></div>
+        {/* ── CENTERED BOTTOM COLUMN: Premium Floating Phone Hero ── */}
+        <div ref={phoneRef} className="w-full flex justify-center items-center relative mt-6" style={{ minHeight: '680px' }}>
 
-          {/* High-fidelity Mockup container */}
-          <div className="relative mockup-container w-[300px] sm:w-[330px] h-[610px] bg-brand-darker border-[6px] border-white/15 rounded-[44px] overflow-hidden">
-            {/* Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-5.5 bg-white/10 rounded-b-2xl z-40 flex items-center justify-center">
-              <div className="w-14 h-1 bg-black/60 rounded-full"></div>
-            </div>            
+          {/* ── Ambient radial glow behind phone ── */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[450px] h-[450px] rounded-full blur-[130px] opacity-35 animate-pulse-slow"
+              style={{ background: 'radial-gradient(circle, #8a2be2 0%, #ff2a85 50%, transparent 80%)' }} />
+          </div>
+
+          {/* ════════════════════════════════════
+              FLOATING ELEMENTS (around the phone)
+          ════════════════════════════════════ */}
+
+          {/* 🛡 Shield – top-left */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '6%', left: '2%',
+              '--from-x': '80px', '--from-y': '180px',
+              '--entry-delay': '0.2s', '--float-dur': '6.5s', '--float-delay': '1.8s'
+            }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-md"
+              style={{ background: 'linear-gradient(135deg, rgba(26,58,110,0.85) 0%, rgba(13,31,66,0.9) 100%)', boxShadow: '0 12px 35px rgba(29,78,216,0.45)' }}>
+              <i className="fa-solid fa-shield-halved text-2xl" style={{ color: '#60a5fa' }} />
+            </div>
+          </div>
+
+          {/* 😂 Emoji – left mid */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '28%', left: '-3%',
+              '--from-x': '120px', '--from-y': '80px',
+              '--entry-delay': '0.45s', '--float-dur': '7s', '--float-delay': '2.05s'
+            }}>
+            <span className="text-4xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] select-none">😂</span>
+          </div>
+
+          {/* 📹 Video icon – left lower */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '52%', left: '-1%',
+              '--from-x': '110px', '--from-y': '-20px',
+              '--entry-delay': '0.7s', '--float-dur': '6.8s', '--float-delay': '2.3s'
+            }}>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-xl"
+              style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <i className="fa-solid fa-video text-base text-white/90" />
+            </div>
+          </div>
+
+          {/* 📞 Call icon – bottom-left */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              bottom: '14%', left: '4%',
+              '--from-x': '90px', '--from-y': '-140px',
+              '--entry-delay': '0.95s', '--float-dur': '7.5s', '--float-delay': '2.55s'
+            }}>
+            <div className="w-11 h-11 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-lg"
+              style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <i className="fa-solid fa-phone text-sm text-white/70" />
+            </div>
+          </div>
+
+          {/* 💬 "What's up?" – left */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              bottom: '28%', left: '-1%',
+              '--from-x': '110px', '--from-y': '-100px',
+              '--entry-delay': '0.6s', '--float-dur': '6.6s', '--float-delay': '2.2s'
+            }}>
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl rounded-bl-sm shadow-2xl border border-white/20 backdrop-blur-md"
+              style={{ background: 'linear-gradient(135deg, rgba(255,42,133,0.9), rgba(255,94,0,0.9))', boxShadow: '0 12px 30px rgba(255,42,133,0.45)' }}>
+              <img src="/avatars/sg.png" className="w-7 h-7 rounded-full object-cover border border-white/40 shadow-sm shrink-0" alt="SG" />
+              <div>
+                <p className="text-white font-bold text-[11.5px] leading-tight">What's up? 👋</p>
+                <p className="text-white/70 text-[8.5px] font-mono">05:18 PM</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 🤫 Emoji – top-right */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '8%', right: '1%',
+              '--from-x': '-80px', '--from-y': '180px',
+              '--entry-delay': '0.35s', '--float-dur': '6.2s', '--float-delay': '1.95s'
+            }}>
+            <span className="text-4xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] select-none">🤫</span>
+          </div>
+
+          {/* 👤 Creator video card – right mid */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '18%', right: '-4%',
+              '--from-x': '-100px', '--from-y': '130px',
+              '--entry-delay': '0.5s', '--float-dur': '7.2s', '--float-delay': '2.1s'
+            }}>
+            <div className="w-32 rounded-2xl overflow-hidden border border-white/20 shadow-2xl backdrop-blur-md"
+              style={{ background: 'rgba(20, 14, 35, 0.85)', boxShadow: '0 15px 45px rgba(138,43,226,0.45)' }}>
+              <div className="h-24 relative overflow-hidden">
+                <img src="/avatars/creator.png" className="w-full h-full object-cover" alt="Pranav Chawla" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#140e23] via-transparent to-transparent" />
+                <div className="absolute top-1.5 right-1.5 text-sm drop-shadow-md">🩷</div>
+              </div>
+              <div className="px-2.5 py-2">
+                <p className="text-white font-bold text-[10px] truncate">Pranav Chawla</p>
+                <p className="text-pink-400 text-[8px] font-medium flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span> Active Now</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 💬 "Going on a trip" – right */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              top: '52%', right: '-2%',
+              '--from-x': '-110px', '--from-y': '-20px',
+              '--entry-delay': '0.8s', '--float-dur': '6.4s', '--float-delay': '2.4s'
+            }}>
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl rounded-br-sm shadow-2xl border border-white/20 backdrop-blur-md"
+              style={{ background: 'linear-gradient(135deg, rgba(255,42,133,0.9), rgba(138,43,226,0.9))', boxShadow: '0 12px 30px rgba(138,43,226,0.45)' }}>
+              <div>
+                <p className="text-white font-bold text-[11.5px] leading-tight">Going on a trip 🏕️</p>
+                <p className="text-white/70 text-[8.5px] font-mono">05:18 PM</p>
+              </div>
+              <img src="/avatars/nt.png" className="w-7 h-7 rounded-full object-cover border border-white/40 shadow-sm shrink-0" alt="NT" />
+            </div>
+          </div>
+
+          {/* 🎙 Voice chip – bottom-right */}
+          <div className={`absolute z-20 hero-item ${isAnimated ? 'animate-in' : ''}`}
+            style={{
+              bottom: '20%', right: '0%',
+              '--from-x': '-100px', '--from-y': '-120px',
+              '--entry-delay': '1.05s', '--float-dur': '7.8s', '--float-delay': '2.65s'
+            }}>
+            <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border border-white/20 shadow-2xl backdrop-blur-xl"
+              style={{ background: 'rgba(138,43,226,0.3)', boxShadow: '0 12px 35px rgba(138,43,226,0.4)' }}>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 shadow-md"
+                style={{ background: 'linear-gradient(135deg, #ff2a85, #8a2be2)' }}>
+                <i className="fa-solid fa-play text-white text-[8px] ml-0.5" />
+              </div>
+              <div className="flex items-center gap-0.5 h-4">
+                {[2, 4, 3, 5, 2, 4, 3, 2, 5, 3, 4, 2].map((h, i) => (
+                  <div key={i} className="w-0.5 rounded-full waveform-bar"
+                    style={{
+                      height: `${h * 14}%`,
+                      background: 'linear-gradient(to top, #ff2a85, #8a2be2)',
+                      animationDelay: `${i * 0.08}s`,
+                    }} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ════════════════════════════════════
+              MAIN PHONE MOCKUP
+          ════════════════════════════════════ */}
+          <div className="relative z-10 mockup-container w-[280px] sm:w-[305px] h-[590px] border-[6px] border-white/15 rounded-[44px] overflow-hidden"
+            style={{
+              background: '#07050a',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.95), 0 0 90px rgba(138,43,226,0.4), 0 0 0 1px rgba(255,255,255,0.1)',
+            }}>
+
+            {/* Dynamic Island notch */}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-40 flex items-center justify-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-white/10" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-white/10" />
+            </div>
+
             {/* Inner App Shell */}
-            <div className="w-full h-full relative flex flex-col pt-8 bg-[#07050a] select-none">
-              
-              {/* Phone Status Bar */}
-              <div className="absolute top-0 left-0 w-full h-8 px-6 flex justify-between items-center text-[10.5px] font-sans font-bold text-gray-300 z-40 pointer-events-none">
-                <span>10:29</span>
-                
+            <div className="w-full h-full relative flex flex-col pt-9 bg-[#07050a] select-none">
 
+              {/* Status Bar */}
+              <div className="absolute top-0 left-0 w-full h-9 px-5 flex justify-between items-center text-[10px] font-bold text-gray-300 z-40 pointer-events-none">
+                <span>10:29</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px]">Vo NR</span>
-                  <i className="fa-solid fa-signal text-[9px]"></i>
-                  <div className="flex items-center gap-0.5 border border-red-500/50 rounded-sm px-0.5 text-[8px] text-red-500 font-mono">
-                    13%
-                  </div>
+                  <span className="text-[8px]">Vo NR</span>
+                  <i className="fa-solid fa-signal text-[9px]" />
+                  <div className="border border-red-500/50 rounded-sm px-0.5 text-[7px] text-red-500 font-mono">13%</div>
                 </div>
               </div>
 
               {/* App Header */}
-              <div className="px-4 pt-4 pb-3 flex justify-between items-center bg-[#07050a] z-10 shrink-0">
-                <div className="flex items-center">
-                  <span className="font-outfit font-black text-xl tracking-tight text-white flex items-center">
-                    Soosial<span className="text-brand-purple text-xl -ml-0.5">.</span>
-                  </span>
-                </div>
-                
+              <div className="px-4 pt-3 pb-2.5 flex justify-between items-center bg-[#07050a] z-10 shrink-0">
+                <span className="font-outfit font-black text-lg tracking-tight text-white">
+                  Soosial<span className="text-brand-purple">.</span>
+                </span>
                 <div className="flex items-center gap-1.5">
-                  {/* Search Bar */}
-                  <div className="bg-[#12101a] border border-white/10 pl-3 pr-1 py-1 rounded-full flex items-center justify-between gap-1 w-36">
-                    <span className="text-[11px] text-gray-400">Search...</span>
-                    <button className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-black text-[10px] cursor-pointer">
-                      <i className="fa-solid fa-magnifying-glass"></i>
+                  <div className="bg-[#12101a] border border-white/10 pl-2.5 pr-1 py-0.5 rounded-full flex items-center gap-1 w-32">
+                    <span className="text-[10px] text-gray-400 flex-1">Search...</span>
+                    <button className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-black text-[8px]">
+                      <i className="fa-solid fa-magnifying-glass" />
                     </button>
                   </div>
-                  
-                  {/* Plus Button */}
-                  <button className="w-[26px] h-[26px] rounded-full bg-[#12101a] border border-white/10 text-white flex items-center justify-center text-[10.5px] cursor-pointer">
-                    <i className="fa-solid fa-plus"></i>
+                  <button className="w-6 h-6 rounded-full bg-[#12101a] border border-white/10 text-white flex items-center justify-center text-[9px]">
+                    <i className="fa-solid fa-plus" />
                   </button>
-
-                  {/* Notification Bell */}
-                  <button className="w-[26px] h-[26px] rounded-full bg-[#12101a] border border-white/10 text-white flex items-center justify-center text-[10.5px] cursor-pointer">
-                    <i className="fa-regular fa-bell text-[10.5px]"></i>
+                  <button className="w-6 h-6 rounded-full bg-[#12101a] border border-white/10 text-white flex items-center justify-center text-[9px]">
+                    <i className="fa-regular fa-bell" />
                   </button>
                 </div>
               </div>
 
-              {/* Horizontal Stories Tray */}
-              <div className="px-4 py-3 flex items-center gap-4 border-b border-white/5 shrink-0 bg-[#07050a] text-left">
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-11 h-11 rounded-full p-[2px] bg-gradient-to-br from-brand-purple to-brand-pink flex items-center justify-center shadow-md shadow-brand-purple/20">
+              {/* Stories Tray with Real Photos */}
+              <div className="px-4 py-2.5 flex items-center gap-3 border-b border-white/5 shrink-0">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-br from-brand-purple to-brand-pink flex items-center justify-center">
                     <div className="w-full h-full rounded-full bg-[#07050a] flex items-center justify-center text-white text-xs">
-                      <i className="fa-solid fa-plus"></i>
+                      <i className="fa-solid fa-plus" />
                     </div>
                   </div>
-                  <span className="text-[10px] text-gray-300 font-bold">Add Story</span>
+                  <span className="text-[9px] text-gray-300 font-bold">Add Story</span>
                 </div>
+                {[
+                  { tag: 'SG', name: '@sg', img: '/avatars/sg.png' },
+                  { tag: 'SK', name: '@sk', img: '/avatars/sk.png' },
+                  { tag: 'NT', name: '@nt', img: '/avatars/nt.png' },
+                ].map((story, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-br from-pink-500 to-purple-600">
+                      <img src={story.img} className="w-full h-full rounded-full object-cover border border-[#07050a]" alt={story.tag} />
+                    </div>
+                    <span className="text-[8px] text-gray-400 font-medium">{story.name}</span>
+                  </div>
+                ))}
               </div>
 
-              {/* Feed Post View */}
-              <div className="flex-1 overflow-y-auto px-4 py-3 bg-[#07050a] space-y-4 no-scrollbar">
-                
-                {/* Card */}
-                <div className="bg-[#0c0a14] border border-white/5 rounded-2xl p-3.5 space-y-3.5 text-left">
-                  {/* Creator Info */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-full bg-brand-purple flex items-center justify-center font-bold text-white text-[11.5px] border border-white/10 shadow">
-                        U1
+              {/* Feed */}
+              <div className="flex-1 overflow-y-auto px-3 py-3 bg-[#07050a] space-y-3 no-scrollbar text-left">
+
+                {/* Post card — luxury tier */}
+                <div className="relative rounded-2xl overflow-hidden" style={{background:'linear-gradient(160deg,rgba(20,14,36,0.98) 0%,rgba(8,6,18,1) 100%)',border:'1px solid rgba(168,85,247,0.22)',boxShadow:'0 0 0 1px rgba(0,0,0,0.6),0 24px 48px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05)'}}>
+                  {/* Dual ambient glows */}
+                  <div className="absolute -top-8 -left-8 w-28 h-28 rounded-full pointer-events-none" style={{background:'radial-gradient(circle,rgba(139,92,246,0.25),transparent 70%)',filter:'blur(20px)'}} />
+                  <div className="absolute -bottom-6 -right-6 w-20 h-20 rounded-full pointer-events-none" style={{background:'radial-gradient(circle,rgba(236,72,153,0.18),transparent 70%)',filter:'blur(16px)'}} />
+                  {/* Top shimmer line */}
+                  <div className="absolute top-0 left-4 right-4 h-px" style={{background:'linear-gradient(90deg,transparent,rgba(168,85,247,0.5),transparent)'}} />
+
+                  <div className="relative p-3 pb-2.5 space-y-2.5">
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="relative">
+                          <div className="absolute inset-0 rounded-full animate-pulse" style={{background:'rgba(139,92,246,0.35)',filter:'blur(4px)',transform:'scale(1.2)'}} />
+                          <img src="/avatars/creator.png" className="relative w-8 h-8 rounded-full object-cover" alt="Creator" style={{border:'1.5px solid rgba(168,85,247,0.7)'}} />
+                          <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400" style={{border:'1.5px solid rgba(8,6,18,1)',boxShadow:'0 0 6px rgba(52,211,153,0.8)'}} />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-[10px] text-white/95 flex items-center gap-1 tracking-tight leading-none">
+                            studytools_pro
+                            <i className="fa-solid fa-circle-check text-[8px] text-violet-400" style={{filter:'drop-shadow(0 0 3px rgba(139,92,246,0.8))'}} />
+                          </p>
+                          <p className="text-[7px] text-white/30 mt-0.5 tracking-widest uppercase font-medium">3h ago · <span style={{color:'rgba(167,139,250,0.7)'}}>Promoted</span></p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-[12px] text-white flex items-center gap-1.5">
-                          user_name_1
-                          <span className="text-[11px] text-[#4f46e5]"><i className="fa-solid fa-laptop-code"></i></span>
-                        </p>
-                      </div>
-                    </div>
-                    <button className="text-gray-400 hover:text-white cursor-pointer"><i className="fa-solid fa-ellipsis-vertical text-[12px]"></i></button>
-                  </div>
-
-                  {/* Post Content Video Card */}
-                  <div className="relative bg-[#13111c] rounded-xl border border-white/10 overflow-hidden flex flex-col justify-between p-3.5 h-[270px] shadow-inner text-white font-sans">
-                    
-                    {/* Video Top Indicators */}
-                    <div className="flex justify-between items-center text-[10.5px] text-gray-400 font-bold z-10 shrink-0">
-                      <span>studytoolsofficial</span>
-                      <span>0:20</span>
-                    </div>
-
-                    {/* Content text in video */}
-                    <div className="my-auto space-y-3 z-10 text-left pt-2">
-                      <h4 className="text-[13px] font-black tracking-wide text-white text-center">
-                        05 SECRET GEMINI CODES
-                      </h4>
-                      <ul className="text-[11px] font-mono text-gray-300 space-y-1 pl-4 leading-relaxed max-w-[170px]">
-                        <li>1. /Visualize</li>
-                        <li>2. /teach</li>
-                        <li>3. /Analyze</li>
-                      </ul>
-                    </div>
-
-                    {/* Creator Vector Graphic (Coded via SVG to look exactly like the creator in homepage.jpeg) */}
-                    <div className="absolute right-0 bottom-6 w-32 h-32 opacity-90 z-0 select-none">
-                      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        {/* Background subtle light */}
-                        <circle cx="50" cy="50" r="45" fill="url(#bgGlow)" opacity="0.15" />
-                        
-                        {/* Creator Portrait details */}
-                        {/* Shoulders / Body */}
-                        <path d="M20 90 Q30 72 50 72 Q70 72 80 90" fill="#0d0d0d" stroke="#1c1c1c" strokeWidth="1.5" />
-                        
-                        {/* Neck */}
-                        <rect x="44" y="55" width="12" height="15" fill="#d9a082" />
-                        
-                        {/* Head */}
-                        <rect x="37" y="32" width="26" height="28" rx="8" fill="#e8b195" />
-                        
-                        {/* Hair */}
-                        <path d="M35 34 C35 24, 65 24, 65 34 C65 28, 35 28, 35 34" fill="#121212" stroke="#121212" strokeWidth="2" />
-                        <path d="M35 33 L65 33 L65 26 L35 26 Z" fill="#121212" />
-                        
-                        {/* Beard */}
-                        <path d="M37 48 C37 60, 63 60, 63 48 L61 48 C61 57, 39 57, 39 48" fill="#1f1f1f" />
-                        
-                        {/* Studio Microphone */}
-                        {/* Stand */}
-                        <line x1="50" y1="62" x2="50" y2="85" stroke="#222" strokeWidth="3" />
-                        {/* Mic Body */}
-                        <rect x="46" y="50" width="8" height="14" rx="4" fill="#333" stroke="#555" strokeWidth="1" />
-                        {/* Pop filter mesh */}
-                        <rect x="47" y="51" width="6" height="6" rx="1" fill="#1a1a1a" />
-                        {/* Shock mount ring */}
-                        <circle cx="50" cy="57" r="7" stroke="#444" strokeWidth="1.5" fill="none" />
-                        
-                        <defs>
-                          <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="#ffffff" />
-                            <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                          </radialGradient>
-                        </defs>
-                      </svg>
-                    </div>
-
-                    {/* Bottom actions bar pill - Styled exactly like the crop */}
-                    <div className="relative z-10 flex justify-between items-center mt-auto">
-                      <div className="flex items-center gap-2.5 bg-[#0b0914] backdrop-blur-md px-3.5 py-2 rounded-full border border-white/10 text-[10.5px] font-bold text-white shadow-lg">
-                        <span className="flex items-center gap-1.5 hover:text-brand-pink transition-colors cursor-pointer">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                          </svg>
-                          <span>43</span>
-                        </span>
-                        <span className="text-white/20 font-light">|</span>
-                        <span className="flex items-center gap-1.5 hover:text-brand-purple transition-colors cursor-pointer">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                          </svg>
-                          <span>23</span>
-                        </span>
-                        <span className="text-white/20 font-light">|</span>
-                        <span className="hover:text-emerald-400 transition-colors cursor-pointer">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="17 1 21 5 17 9" />
-                            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                            <polyline points="7 23 3 19 7 15" />
-                            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                          </svg>
-                        </span>
-                        <span className="text-white/20 font-light">|</span>
-                        <span className="hover:text-brand-orange transition-colors cursor-pointer">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13" />
-                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                          </svg>
-                        </span>
-                      </div>
-                      
-                      <button className="text-gray-300 hover:text-white transition-colors cursor-pointer">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                        </svg>
+                      <button className="w-5 h-5 rounded-full flex items-center justify-center" style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)'}}>
+                        <i className="fa-solid fa-ellipsis text-[8px] text-white/30" />
                       </button>
                     </div>
 
+                    {/* Content card */}
+                    <div onDoubleClick={handleDoubleTap} className="relative rounded-xl overflow-hidden h-[222px] flex flex-col justify-between group cursor-pointer" style={{border:'1px solid rgba(255,255,255,0.06)',boxShadow:'inset 0 0 0 1px rgba(168,85,247,0.08)'}}>
+                      <img src="/avatars/post.png" className="absolute inset-0 w-full h-full object-cover scale-105 transition-transform duration-1000 group-hover:scale-110" alt="Post" />
+                      {/* Dark overlay — uniform so all text is legible */}
+                      <div className="absolute inset-0" style={{background:'linear-gradient(180deg,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.5) 30%,rgba(0,0,0,0.55) 60%,rgba(0,0,0,0.92) 100%)'}} />
+                      {/* Edge vignette */}
+                      <div className="absolute inset-0" style={{boxShadow:'inset 0 0 40px rgba(0,0,0,0.7)'}} />
+                      {/* Double-tap heart */}
+                      {doubleTapHeart && (
+                        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+                          <i className="fa-solid fa-heart" style={{fontSize:'64px',color:'rgba(239,68,68,0.85)',filter:'drop-shadow(0 0 20px rgba(239,68,68,0.6))',animation:'dtHeart 0.9s ease forwards'}} />
+                        </div>
+                      )}
+
+                      {/* Top bar */}
+                      <div className="relative z-10 flex justify-between items-center p-2.5 pt-2">
+                        <span className="text-[7.5px] text-white/70 font-medium px-2 py-0.5 rounded-full tracking-widest uppercase" style={{background:'rgba(0,0,0,0.5)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.08)'}}>studytoolsofficial</span>
+                        <span className="flex items-center gap-1 text-[7px] text-white font-bold px-2 py-0.5 rounded-full tracking-widest uppercase" style={{background:'linear-gradient(135deg,rgba(236,72,153,0.9),rgba(139,92,246,0.9))',boxShadow:'0 0 14px rgba(168,85,247,0.5),0 0 4px rgba(236,72,153,0.4)'}}>
+                          <span className="w-1 h-1 rounded-full bg-white animate-pulse inline-block" />LIVE
+                        </span>
+                      </div>
+
+                      {/* Center content — frosted dark panel */}
+                      <div className="relative z-10 px-2.5 space-y-1.5" style={{background:'rgba(0,0,0,0.35)',backdropFilter:'blur(4px)',borderRadius:'10px',padding:'6px 10px'}}>
+                        {/* Editorial label */}
+                        <div className="flex items-center gap-1.5">
+                          <div className="h-px flex-1" style={{background:'linear-gradient(90deg,transparent,rgba(168,85,247,0.4))'}} />
+                          <span className="text-[6.5px] tracking-[0.25em] uppercase font-semibold" style={{color:'rgba(216,180,254,0.85)'}}>Exclusive Drop</span>
+                          <div className="h-px flex-1" style={{background:'linear-gradient(90deg,rgba(168,85,247,0.4),transparent)'}} />
+                        </div>
+                        {/* Title */}
+                        <h4 className="text-center text-[11px] font-black leading-snug tracking-widest uppercase" style={{color:'#fff',textShadow:'0 0 18px rgba(168,85,247,0.9),0 2px 12px rgba(0,0,0,1)'}}>
+                          05 Secret<br/>
+                          <span style={{color:'#c084fc'}}>Gemini Codes</span>
+                        </h4>
+                        {/* Code list — chip style */}
+                        <div className="flex flex-wrap justify-center gap-1 pt-0.5">
+                          {[['🎨','/Visualize','#c084fc'],['📚','/Teach','#818cf8'],['⚡','/Analyze','#34d399']].map(([e,c,col])=>(
+                            <div key={c} className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg" style={{background:'rgba(0,0,0,0.82)',backdropFilter:'blur(16px)',border:`1px solid ${col}55`}}>
+                               <span className="text-[8px]">{e}</span>
+                               <span className="text-[7.5px] font-mono font-bold" style={{color:col,textShadow:`0 0 6px ${col}99`}}>{c}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Action bar */}
+                      <div className="relative z-10 flex justify-between items-center px-2.5 pb-2">
+                        {shareToast && (
+                          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[8px] font-bold text-white px-2 py-0.5 rounded-full z-20" style={{background:'linear-gradient(135deg,#38bdf8,#818cf8)',boxShadow:'0 0 10px rgba(56,189,248,0.5)'}}>Link Copied!</div>
+                        )}
+                        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full" style={{background:'rgba(0,0,0,0.65)',backdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.08)'}}>
+                          {/* Like */}
+                          <span onClick={()=>setLiked(l=>!l)} className="flex items-center gap-1 text-[8px] font-semibold cursor-pointer transition-all hover:scale-125 active:scale-95 select-none" style={{color: liked ? '#f472b6' : 'rgba(255,255,255,0.4)'}}>
+                            <i className={liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} style={{filter: liked ? 'drop-shadow(0 0 4px #f472b688)' : 'none', transition:'all 0.2s'}} />
+                            <span style={{color: liked ? '#f9a8d4' : 'rgba(255,255,255,0.5)'}}>{liked ? '4.3k' : '4.3k'}</span>
+                          </span>
+                          {/* Comment */}
+                          <span className="flex items-center gap-1 text-[8px] font-semibold cursor-pointer hover:scale-125 active:scale-95 transition-all select-none" style={{color:'#a78bfa'}}>
+                            <i className="fa-regular fa-comment" style={{filter:'drop-shadow(0 0 3px #a78bfa55)'}} />
+                            <span className="text-white/50">{commentCount}</span>
+                          </span>
+                          {/* Repost */}
+                          <span onClick={()=>setReposted(r=>!r)} className="flex items-center gap-1 text-[8px] font-semibold cursor-pointer hover:scale-125 active:scale-95 transition-all select-none" style={{color: reposted ? '#34d399' : 'rgba(255,255,255,0.4)'}}>
+                            <i className="fa-solid fa-retweet" style={{filter: reposted ? 'drop-shadow(0 0 4px #34d39988)' : 'none', transition:'all 0.2s'}} />
+                          </span>
+                          {/* Share */}
+                          <span onClick={()=>{ setShareToast(true); setTimeout(()=>setShareToast(false),1500); }} className="flex items-center gap-1 text-[8px] font-semibold cursor-pointer hover:scale-125 active:scale-95 transition-all select-none" style={{color:'#38bdf8'}}>
+                            <i className="fa-regular fa-paper-plane" style={{filter:'drop-shadow(0 0 3px #38bdf855)'}} />
+                          </span>
+                        </div>
+                        {/* Bookmark */}
+                        <div onClick={()=>setBookmarked(b=>!b)} className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform" style={{background: bookmarked ? 'rgba(139,92,246,0.3)' : 'rgba(0,0,0,0.6)', backdropFilter:'blur(16px)', border: bookmarked ? '1px solid rgba(168,85,247,0.6)' : '1px solid rgba(168,85,247,0.2)'}}>
+                          <i className={bookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'} style={{fontSize:'8px', color: bookmarked ? '#c084fc' : '#a78bfa', filter: bookmarked ? 'drop-shadow(0 0 4px #c084fc88)' : 'none', transition:'all 0.2s'}} />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
               </div>
 
-              {/* Bottom Navigation Bar - Styled exactly like the crop */}
-              <div className="px-6 py-3.5 bg-[#07050a] border-t border-white/5 flex justify-between items-center shrink-0 z-10">
-                <button className="text-[#8b5cf6] cursor-pointer">
-                  <svg className="w-5 h-5" fill="#8b5cf6" viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                  </svg>
-                </button>
-                <button className="cursor-pointer text-gray-400 hover:text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="9" width="18" height="12" rx="2" ry="2" />
-                    <path d="M3 9l4-4h14l-4 4z" />
-                    <path d="M9 5v4" />
-                    <path d="M15 5v4" />
-                  </svg>
-                </button>
-                <button className="cursor-pointer text-gray-400 hover:text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                    <line x1="8" y1="10" x2="16" y2="10" />
-                    <line x1="8" y1="14" x2="14" y2="14" />
-                  </svg>
-                </button>
-                <button className="cursor-pointer text-gray-400 hover:text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </button>
+              {/* Bottom nav */}
+              <div className="px-5 py-3 bg-[#07050a] border-t border-white/5 flex justify-between items-center shrink-0">
+                <button className="text-brand-purple"><i className="fa-solid fa-house text-base" /></button>
+                <button className="text-gray-500 hover:text-white transition-colors"><i className="fa-solid fa-clapperboard text-base" /></button>
+                <button className="text-gray-500 hover:text-white transition-colors"><i className="fa-solid fa-message text-base" /></button>
+                <button className="text-gray-500 hover:text-white transition-colors"><i className="fa-solid fa-user text-base" /></button>
               </div>
 
             </div>
           </div>
+
+          {/* ── Animation system (Scroll-Triggered & Entrance) ── */}
+          <style>{`
+            /* ── Shifting Ambient Gradient Text ── */
+            .hero-gradient-animated {
+              background: linear-gradient(135deg, #ff5e00 0%, #ff2a85 35%, #8a2be2 70%, #ff5e00 100%);
+              background-size: 300% 300%;
+              animation: gradientShift 6s ease infinite;
+            }
+
+            @keyframes gradientShift {
+              0%   { background-position: 0% 50%; }
+              50%  { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+
+            /* ── Header Entrance Animations ── */
+            @keyframes heroFadeUp {
+              0% {
+                opacity: 0;
+                transform: translateY(24px) scale(0.97);
+                filter: blur(8px);
+              }
+              100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+              }
+            }
+
+            @keyframes floatUp {
+              0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.7);
+              }
+              20% {
+                opacity: 1;
+                transform: translateY(-5px) scale(1.1);
+              }
+              80% {
+                opacity: 1;
+                transform: translateY(-35px) scale(1);
+              }
+              100% {
+                opacity: 0;
+                transform: translateY(-55px) scale(0.8);
+              }
+            }
+
+            .animate-float-up {
+              animation: floatUp 1.8s ease-out forwards;
+            }
+
+            .hero-entrance-1 { animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+            .hero-entrance-2 { animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+            .hero-entrance-3 { animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+            .hero-entrance-4 { animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+
+            /* ── Default state: hidden before scroll ── */
+            .hero-item {
+              opacity: 0;
+              pointer-events: none;
+            }
+
+            /* ── Active state: triggers on scroll ── */
+            .hero-item.animate-in {
+              opacity: 1;
+              pointer-events: auto;
+              animation:
+                flyFromPhone 1.6s cubic-bezier(0.16, 1, 0.3, 1) var(--entry-delay, 0s) both,
+                heroFloat    var(--float-dur, 6.5s) ease-in-out var(--float-delay, 2s) infinite;
+            }
+
+            /* ── 1. Entry: Smooth, luxurious burst out from phone center ── */
+            @keyframes flyFromPhone {
+              0% {
+                opacity: 0;
+                filter: blur(18px);
+                transform:
+                  translateX(var(--from-x, 0px))
+                  translateY(var(--from-y, 0px))
+                  scale(0.1);
+              }
+              65% {
+                opacity: 1;
+                filter: blur(0px);
+                transform:
+                  translateX(calc(var(--from-x, 0px) * -0.04))
+                  translateY(calc(var(--from-y, 0px) * -0.04))
+                  scale(1.04);
+              }
+              100% {
+                opacity: 1;
+                filter: blur(0px);
+                transform: translateX(0) translateY(0) scale(1);
+              }
+            }
+
+            /* ── 2. Idle: Gentle, ultra-smooth floating loop ── */
+            @keyframes heroFloat {
+              0%   { transform: translateY(0px) rotate(0deg); }
+              25%  { transform: translateY(-8px) rotate(0.8deg); }
+              50%  { transform: translateY(-14px) rotate(0deg); }
+              75%  { transform: translateY(-8px) rotate(-0.8deg); }
+              100% { transform: translateY(0px) rotate(0deg); }
+            }
+
+            /* ── 3. Waveform bars pulse ── */
+            @keyframes waveformPulse {
+              0%, 100% { transform: scaleY(0.25); opacity: 0.45; }
+              50%       { transform: scaleY(1);    opacity: 1; }
+            }
+
+            .waveform-bar {
+              animation: waveformPulse 0.9s ease-in-out infinite;
+            }
+          `}</style>
+
         </div>
       </div>
     </section>
