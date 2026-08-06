@@ -279,8 +279,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
 
       {/* ── CAROUSEL ── */}
       <div
-        className="relative z-10 w-full max-w-7xl flex items-center justify-center px-4"
-        style={{ height: '520px', perspective: '1200px' }}
+        className="relative z-10 w-full max-w-7xl flex items-center justify-center px-2 sm:px-4 h-[620px] sm:h-[650px] lg:h-[520px]"
+        style={{ perspective: '1200px' }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => { setIsHovered(false); setIsDragging(false); setDragDelta(0); }}
         onMouseDown={onPointerDown}
@@ -312,9 +312,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
             <div
               key={feature.id}
               onClick={() => !isDragging && goToSlide(idx)}
-              className="absolute w-[88vw] sm:w-[72vw] lg:w-[58vw] max-w-[900px] rounded-[36px] cursor-pointer"
+              className="absolute w-[92vw] sm:w-[80vw] lg:w-[58vw] max-w-[900px] h-[580px] sm:h-[610px] lg:h-[480px] rounded-[24px] sm:rounded-[36px] cursor-pointer"
               style={{
-                height: '480px',
                 transform: `translateX(${tx}px) scale(${scale}) rotateY(${rotateY}deg)`,
                 opacity,
                 filter: blur > 0 ? `blur(${blur}px)` : 'none',
@@ -328,7 +327,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
             >
               {/* ── Glass Card ── */}
               <div
-                className="relative w-full h-full rounded-[36px] border border-white/10 backdrop-blur-2xl overflow-hidden p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6"
+                className="relative w-full h-full rounded-[24px] sm:rounded-[36px] border border-white/10 backdrop-blur-2xl overflow-y-auto lg:overflow-hidden p-4 sm:p-6 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6 no-scrollbar"
                 style={{
                   background: isActive
                     ? `linear-gradient(135deg, #120f1d 0%, #0e0a1c 60%, ${palette.glow}18 100%)`
@@ -350,7 +349,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
 
                 {/* ── LEFT COLUMN ── */}
                 <div
-                  className="w-full lg:w-[48%] flex flex-col justify-center items-start text-left space-y-4 z-20 shrink-0"
+                  className="w-full lg:w-[48%] flex flex-col justify-center items-start text-left space-y-2 sm:space-y-4 z-20 shrink-0"
                   style={{
                     opacity: isActive ? 1 : 0,
                     transform: isActive ? 'translateY(0)' : 'translateY(12px)',
@@ -368,17 +367,17 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                     </div>
                   )}
 
-                  <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
                     {feature.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed line-clamp-3 sm:line-clamp-none">
+                  <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed line-clamp-2 sm:line-clamp-none">
                     {feature.description}
                   </p>
 
                   {/* Bullets */}
                   {feature.bullets && (
-                    <ul className="space-y-2 pt-1">
+                    <ul className="space-y-1.5 sm:space-y-2 pt-0.5 sm:pt-1">
                       {feature.bullets.map((bullet, bIdx) => (
                         <li key={bIdx} className="flex items-center gap-2.5 text-xs text-neutral-200 font-medium"
                           style={{
@@ -400,7 +399,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                   )}
 
                   {/* Audio Engine strip */}
-                  <div className="bg-black/40 border border-white/5 p-3 rounded-2xl flex items-center justify-between gap-3 w-full mt-1">
+                  <div className="bg-black/40 border border-white/5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl flex items-center justify-between gap-2 sm:gap-3 w-full mt-1">
                     <div className="space-y-0.5">
                       <p className="text-[10px] font-bold text-white flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: palette.accent }} />
@@ -436,32 +435,34 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                 </div>
 
                 {/* ── RIGHT COLUMN: Phone mockup ── */}
-                <div className="w-full lg:w-[50%] h-full flex items-center justify-center relative z-10">
-                  <PhoneMockup
-                    activeTab={activeTab}
-                    isActive={isActive}
-                    palette={palette}
-                    phoneDarkMode={phoneDarkMode}
-                    screenKey={screenKey}
-                    isVoicePlaying={isVoicePlaying}
-                    activeVoiceId={activeVoiceId}
-                    chatMessages={chatMessages}
-                    typedMessage={typedMessage}
-                    setTypedMessage={setTypedMessage}
-                    isRecordingVoice={isRecordingVoice}
-                    soosLiked={soosLiked}
-                    soosLikeCount={soosLikeCount}
-                    showSoosComments={showSoosComments}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    triggerTabChange={triggerTabChange}
-                    handlePlayVoiceComment={handlePlayVoiceComment}
-                    handleSendMessage={handleSendMessage}
-                    handleRecordVoice={handleRecordVoice}
-                    handleLikeSoos={handleLikeSoos}
-                    setShowSoosComments={setShowSoosComments}
-                    onBookCreator={onBookCreator}
-                  />
+                <div className="w-full lg:w-[50%] h-auto lg:h-full flex items-center justify-center relative z-10 shrink-0 py-1 lg:py-0">
+                  <div className="transform scale-[0.72] sm:scale-90 lg:scale-100 origin-center transition-transform duration-300 my-[-45px] sm:my-[-15px] lg:my-0">
+                    <PhoneMockup
+                      activeTab={activeTab}
+                      isActive={isActive}
+                      palette={palette}
+                      phoneDarkMode={phoneDarkMode}
+                      screenKey={screenKey}
+                      isVoicePlaying={isVoicePlaying}
+                      activeVoiceId={activeVoiceId}
+                      chatMessages={chatMessages}
+                      typedMessage={typedMessage}
+                      setTypedMessage={setTypedMessage}
+                      isRecordingVoice={isRecordingVoice}
+                      soosLiked={soosLiked}
+                      soosLikeCount={soosLikeCount}
+                      showSoosComments={showSoosComments}
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                      triggerTabChange={triggerTabChange}
+                      handlePlayVoiceComment={handlePlayVoiceComment}
+                      handleSendMessage={handleSendMessage}
+                      handleRecordVoice={handleRecordVoice}
+                      handleLikeSoos={handleLikeSoos}
+                      setShowSoosComments={setShowSoosComments}
+                      onBookCreator={onBookCreator}
+                    />
+                  </div>
                 </div>
 
               </div>
