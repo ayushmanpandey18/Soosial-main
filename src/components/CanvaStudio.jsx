@@ -404,7 +404,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-gray-400"> SOOS (Short Video):</span>
-                      <span className="text-brand-orange font-bold font-mono">â‚¹{Number(soosRate).toLocaleString('en-IN')}</span>
+                      <span className="text-brand-orange font-bold font-mono">{Number(soosRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
                       type="range"
@@ -421,7 +421,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-gray-400"> Custom Story:</span>
-                      <span className="text-brand-pink font-bold font-mono">â‚¹{Number(storyRate).toLocaleString('en-IN')}</span>
+                      <span className="text-brand-pink font-bold font-mono">{Number(storyRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
                       type="range"
