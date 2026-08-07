@@ -188,7 +188,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
     return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); clearTimeout(t); };
   }, []);
 
-  /* ── AUTO-PLAY (2.5 s interval, pauses only on hover/drag) ── */
+  /* ── AUTO-PLAY (4.2s interval for smooth, comfortable reading) ── */
   const resetAutoPlay = useCallback(() => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     autoPlayRef.current = setInterval(() => {
@@ -198,7 +198,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
         if (tabMap[next]) { setActiveTab(tabMap[next]); setScreenKey(k => k + 1); }
         return next;
       });
-    }, 2500);
+    }, 4200);
   }, [total]);
 
   useEffect(() => {
@@ -318,7 +318,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                 zIndex: zIdx,
                 transition: isDragging
                   ? 'opacity 0.15s ease, filter 0.15s ease'
-                  : 'transform 0.65s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.5s ease, filter 0.5s ease',
+                  : 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, filter 0.6s ease',
                 pointerEvents: Math.abs(offset) > 1 ? 'none' : 'auto',
                 willChange: 'transform, opacity',
               }}
