@@ -287,7 +287,12 @@ export default function Hero({ onBookCreator }) {
               <i className="fa-solid fa-arrow-right text-xs"></i>
             </button>
 
-            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-2.5 bg-brand-dark border border-white/15 rounded-xl px-4 py-2.5 hover:border-brand-orange/60">
+            <a
+              href="https://play.google.com/store/apps/details?id=com.omnexiatechnology.soosial&pcampaignid=web_share"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 bg-brand-dark border border-white/15 rounded-xl px-4 py-2.5 hover:border-brand-orange/60 transition-all hover:scale-105"
+            >
               <i className="fa-brands fa-google-play text-xl text-brand-orange"></i>
               <div className="text-left">
                 <span className="block text-[8px] uppercase text-gray-400 font-bold">Acquire on</span>
@@ -295,7 +300,12 @@ export default function Hero({ onBookCreator }) {
               </div>
             </a>
 
-            <a href="#download" onClick={(e) => e.preventDefault()} className="flex items-center gap-2.5 bg-brand-dark border border-white/15 rounded-xl px-4 py-2.5 hover:border-brand-purple/60">
+            <a
+              href="https://apps.apple.com/in/app/soosial/id6786051737"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 bg-brand-dark border border-white/15 rounded-xl px-4 py-2.5 hover:border-brand-purple/60 transition-all hover:scale-105"
+            >
               <i className="fa-brands fa-apple text-xl text-brand-pink"></i>
               <div className="text-left">
                 <span className="block text-[8px] uppercase text-gray-400 font-bold">Download from</span>
