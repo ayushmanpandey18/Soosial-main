@@ -411,7 +411,7 @@ export default function CanvaStudio({ onBookCreator }) {
                       min="500"
                       max="15000"
                       step="100"
-                      value={soosRate}
+                      value={ soosRate}
                       onChange={(e) => setSoosRate(Number(e.target.value))}
                       className="w-full h-1 bg-white/10 accent-brand-orange rounded-lg appearance-none cursor-pointer"
                     />
@@ -421,7 +421,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-gray-400"> Custom Story:</span>
-                      <span className="text-brand-pink font-bold font-mono">{Number(storyRate).toLocaleString('en-IN')}</span>
+                      <span className="text-brand-pink font-bold font-mono">{Number("₹"storyRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
                       type="range"
