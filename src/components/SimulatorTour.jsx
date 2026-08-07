@@ -871,10 +871,10 @@ function PhoneMockup({
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
             </svg>
           </button>
-          {/* Feed/Media */}
+          {/* Feed/Media - Material Design film reel icon */}
           <button onClick={() => triggerTabChange('explore')} className="transition-all duration-200" style={{ color: activeTab === 'explore' ? palette.accent : 'rgba(255,255,255,0.3)', transform: activeTab === 'explore' ? 'scale(1.2)' : 'scale(1)' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="4" /><line x1="7" y1="12" x2="14" y2="12" /><line x1="7" y1="16" x2="11" y2="16" />
+            <svg width="14" height="14" viewBox="80 -880 800 800" fill="currentColor">
+              <path d="m160-800 80 160h120l-80-160h80l80 160h120l-80-160h80l80 160h120l-80-160h120q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800Zm0 240v320h640v-320H160Zm0 0v320-320Z"/>
             </svg>
           </button>
           {/* Chat */}

@@ -404,7 +404,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-gray-400"> SOOS (Short Video):</span>
-                      <span className="text-brand-orange font-bold font-mono">{Number(soosRate).toLocaleString('en-IN')}</span>
+                      <span className="text-brand-orange font-bold font-mono">₹{Number(soosRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
                       type="range"
@@ -421,7 +421,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-gray-400"> Custom Story:</span>
-                      <span className="text-brand-pink font-bold font-mono">{Number("₹" +storyRate).toLocaleString('en-IN')}</span>
+                      <span className="text-brand-pink font-bold font-mono">₹{Number(storyRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
                       type="range"
@@ -1105,7 +1105,9 @@ export default function CanvaStudio({ onBookCreator }) {
                     className={`hover:text-brand-pink flex flex-col items-center gap-0.5 cursor-pointer ${activeScreen === 'domain' ? 'text-brand-pink' : ''
                       }`}
                   >
-                    <i className="fa-regular fa-clapperboard text-[11px]"></i>
+                    <svg width="11" height="11" viewBox="80 -880 800 800" fill="currentColor">
+                      <path d="m160-800 80 160h120l-80-160h80l80 160h120l-80-160h80l80 160h120l-80-160h120q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800Zm0 240v320h640v-320H160Zm0 0v320-320Z"/>
+                    </svg>
                   </button>
 
                   <button

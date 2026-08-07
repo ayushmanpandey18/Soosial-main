@@ -22,14 +22,27 @@ export default function Header() {
 
 
         {/* CTA Download Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <a href="#download-assets" className="px-3 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-orange/15 border border-white/20 hover:border-brand-orange/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-black/20">
-            <i className="fa-brands fa-google-play text-brand-orange text-xs"></i>
-            <span className="hidden xs:inline">Play Store</span>
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <a
+            href="https://play.google.com/store/apps/details?id=com.omnexiatechnology.soosial&pcampaignid=web_share"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-3.5 py-2 sm:px-4.5 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-white/10 via-white/5 to-white/10 hover:from-brand-orange/25 hover:to-brand-pink/20 border border-white/15 hover:border-brand-orange/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/40 hover:shadow-[0_0_20px_rgba(255,94,0,0.35)] overflow-hidden"
+          >
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+            <i className="fa-brands fa-google-play text-brand-orange text-xs group-hover:scale-110 transition-transform"></i>
+            <span>Play Store</span>
           </a>
-          <a href="#download-assets" className="px-3 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-pink/15 border border-white/20 hover:border-brand-pink/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-black/20">
-            <i className="fa-brands fa-apple text-brand-pink text-xs"></i>
-            <span className="hidden xs:inline">App Store</span>
+
+          <a
+            href="https://apps.apple.com/in/app/soosial/id6786051737"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-3.5 py-2 sm:px-4.5 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-white/10 via-white/5 to-white/10 hover:from-brand-pink/25 hover:to-brand-purple/20 border border-white/15 hover:border-brand-pink/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-black/40 hover:shadow-[0_0_20px_rgba(255,42,133,0.35)] overflow-hidden"
+          >
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+            <i className="fa-brands fa-apple text-brand-pink text-xs group-hover:scale-110 transition-transform"></i>
+            <span>App Store</span>
           </a>
         </div>
       </div>
