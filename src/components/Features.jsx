@@ -4,9 +4,6 @@ import { playClickSound, playDemoSound } from '../utils/audio';
 export default function Features() {
   // Slide 2 simulated state: Toggle Professional/Creative
   const [personaToggle, setPersonaToggle] = useState('professional');
-  
-  // Slide 4 simulated state: Escrow Booking status
-  const [escrowBooked, setEscrowBooked] = useState(false);
 
   // Auto loop Slide 2 Persona switcher to make it animate automatically
   useEffect(() => {
@@ -15,20 +12,6 @@ export default function Features() {
     }, 3000);
     return () => clearInterval(timer);
   }, []);
-
-  // Auto loop Slide 4 Escrow Booking to show active workflow animation
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEscrowBooked(prev => !prev);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleEscrowInteraction = () => {
-    playClickSound();
-    setEscrowBooked(!escrowBooked);
-    playDemoSound(660, 0.2, 'sine');
-  };
 
   return (
     <div className="bg-brand-darker text-white overflow-hidden">
@@ -65,10 +48,10 @@ export default function Features() {
                 
                 {/* Header */}
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-brand-pink flex items-center justify-center font-bold text-white text-[10px]">U2</div>
+                  <div className="w-8 h-8 rounded-full bg-brand-pink flex items-center justify-center font-bold text-white text-[10px]">SG</div>
                   <div>
-                    <h5 className="text-[10.5px] font-bold text-white">user_name_2</h5>
-                    <p className="text-[7.5px] text-gray-500">Active content contributor</p>
+                    <h5 className="text-[10.5px] font-bold text-white">@sg.creates</h5>
+                    <p className="text-[7.5px] text-gray-500">Active content creator</p>
                   </div>
                 </div>
 
@@ -130,7 +113,7 @@ export default function Features() {
             
             {/* Right Column: High-quality visual loop animation */}
             <div className="flex-1 flex justify-center">
-              <div className="relative mockup-container w-80 h-[280px] bg-brand-darker border border-white/10 rounded-3xl p-5 flex flex-col justify-between select-none text-left">
+              <div className="relative mockup-container w-80 h-[310px] bg-brand-darker border border-white/10 rounded-3xl p-5 flex flex-col select-none text-left overflow-hidden">
                 <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-brand-purple/10 rounded-full blur-2xl"></div>
                 
                 {/* Header */}
@@ -143,7 +126,7 @@ export default function Features() {
                 </div>
 
                 {/* Animated Portfolio Card */}
-                <div className="flex-1 flex items-center justify-center py-4">
+                <div className="flex-1 flex items-center justify-center py-2">
                   {personaToggle === 'professional' ? (
                     <div className="w-full bg-[#0b0914] border border-white/5 p-3.5 rounded-2xl space-y-2.5 animate-fade-in">
                       <div className="flex items-center gap-1.5 text-brand-purple text-[8.5px] font-black uppercase tracking-wider">
@@ -229,87 +212,6 @@ export default function Features() {
                     <p className="text-[7.5px] text-gray-500 font-bold uppercase">100% Local Encrypted</p>
                   </div>
                 </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ================= BANNERS CONTAINER: SLIDE 4 ================= */}
-      <section className="py-24 border-t border-white/5 relative bg-brand-dark">
-        <div className="absolute top-1/2 right-10 w-[300px] h-[300px] bg-brand-pink/5 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center justify-between gap-16">
-            
-            {/* Left Column: Text content */}
-            <div className="flex-1 text-left space-y-6">
-              <span className="text-[10px] font-black uppercase text-brand-pink tracking-widest bg-brand-pink/10 border border-brand-pink/20 px-3 py-1 rounded-full">
-                Guaranteed Security
-              </span>
-              <h3 className="text-3xl sm:text-5xl font-black font-outfit leading-tight">
-                Protected Payments & <br />
-                <span className="gradient-text">Escrow Bookings.</span>
-              </h3>
-              <p className="text-gray-400 text-sm leading-relaxed max-w-lg">
-                Transact with complete peace of mind. Soosial integrates an automated Escrow framework so payments for services, collaborations, and creator bookings remain securely held until both parties fulfill agreed deliverables.
-              </p>
-              <ul className="text-xs text-gray-500 space-y-2.5 font-bold pt-2">
-                <li><i className="fa-solid fa-check text-brand-pink mr-2"></i> Automated smart-contract style escrow protection</li>
-                <li><i className="fa-solid fa-check text-brand-pink mr-2"></i> Fraud-proof verification before fund release</li>
-                <li><i className="fa-solid fa-check text-brand-pink mr-2"></i> Instant creator payout settlement</li>
-              </ul>
-            </div>
-
-            {/* Right Column: Escrow Interaction Component */}
-            <div className="flex-1 flex justify-center">
-              <div className="relative mockup-container w-80 h-[280px] bg-brand-darker border border-white/10 rounded-3xl p-5 flex flex-col justify-between select-none text-left overflow-hidden">
-                <div className="absolute -top-10 -left-10 w-28 h-28 bg-brand-pink/10 rounded-full blur-2xl"></div>
-
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
-                  <span className="text-[9px] font-black text-white tracking-widest uppercase">Smart Escrow Vault</span>
-                  <span className="text-[8px] font-mono font-bold text-brand-pink bg-brand-pink/10 px-2 py-0.5 rounded border border-brand-pink/20">
-                    STATUS: ACTIVE
-                  </span>
-                </div>
-
-                {/* Interactive Card */}
-                <div className="my-auto bg-[#0b0914] border border-white/5 p-4 rounded-2xl space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="text-[12px] font-bold text-white">Creator Consultation</h4>
-                      <p className="text-[8.5px] text-gray-500">Service Fee: 1500 INR</p>
-                    </div>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs border ${escrowBooked ? 'bg-green-500/20 border-green-500/30 text-green-400' : 'bg-brand-pink/20 border-brand-pink/30 text-brand-pink'}`}>
-                      <i className={`fa-solid ${escrowBooked ? 'fa-lock' : 'fa-lock-open'}`}></i>
-                    </div>
-                  </div>
-
-                  <div className="bg-black/50 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
-                    <span className="text-[9px] text-gray-400">Funds Held in Escrow:</span>
-                    <span className="text-[10px] font-bold font-mono text-white">
-                      {escrowBooked ? '1,500 INR [LOCKED]' : '0 INR [PENDING]'}
-                    </span>
-                  </div>  
-
-                  <button 
-                    onClick={handleEscrowInteraction}
-                    className={`w-full py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer ${
-                      escrowBooked 
-                        ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' 
-                        : 'bg-brand-pink hover:bg-brand-pink/80 text-white shadow-lg shadow-brand-pink/20'
-                    }`}
-                  >
-                    {escrowBooked ? 'Release Payment to Creator' : 'Simulate Escrow Booking'}
-                  </button>
-                </div>
-
-                {/* Footer status notice */}
-                <div className="text-[7.5px] text-gray-500 font-medium text-center">
-                  🔒 Funds protected until service verification
-                </div>
-
               </div>
             </div>
 

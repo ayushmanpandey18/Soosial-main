@@ -13,35 +13,35 @@ const SLIDE_PALETTES = [
 
 export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
   /* ── SIMULATOR CORE STATES ── */
-  const [activeTab, setActiveTab]                 = useState('home');
-  const [isVoicePlaying, setIsVoicePlaying]       = useState(false);
-  const [activeVoiceId, setActiveVoiceId]         = useState(null);
-  const [activeChatId, setActiveChatId]           = useState(null);
-  const [chatMessages, setChatMessages]           = useState([
-    { id: 1, sender: 'them', text: 'Hey, welcome to Soosial!',          time: 'Wednesday' },
-    { id: 2, sender: 'me',   text: 'Hey, checking out the platform.',   time: 'Wednesday', status: 'read' },
+  const [activeTab, setActiveTab] = useState('home');
+  const [isVoicePlaying, setIsVoicePlaying] = useState(false);
+  const [activeVoiceId, setActiveVoiceId] = useState(null);
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: 'them', text: 'Hey, welcome to Soosial!', time: 'Wednesday' },
+    { id: 2, sender: 'me', text: 'Hey, checking out the platform.', time: 'Wednesday', status: 'read' },
   ]);
-  const [typedMessage, setTypedMessage]           = useState('');
-  const [isRecordingVoice, setIsRecordingVoice]   = useState(false);
-  const [accountType, setAccountType]             = useState('Professional');
+  const [typedMessage, setTypedMessage] = useState('');
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [accountType, setAccountType] = useState('Professional');
   const [creatorPricingMode, setCreatorPricingMode] = useState('creator');
-  const [showSettings, setShowSettings]           = useState(false);
-  const [phoneDarkMode, setPhoneDarkMode]         = useState(true);
-  const [soosLiked, setSoosLiked]                 = useState(false);
-  const [soosLikeCount, setSoosLikeCount]         = useState(2);
-  const [showSoosComments, setShowSoosComments]   = useState(false);
-  const [searchQuery, setSearchQuery]             = useState('');
-  const audioTimeoutRef                           = useRef(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [phoneDarkMode, setPhoneDarkMode] = useState(true);
+  const [soosLiked, setSoosLiked] = useState(false);
+  const [soosLikeCount, setSoosLikeCount] = useState(2);
+  const [showSoosComments, setShowSoosComments] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const audioTimeoutRef = useRef(null);
 
   /* ── CAROUSEL STATES ── */
-  const [activeIndex, setActiveIndex]     = useState(0);
-  const [isHovered, setIsHovered]         = useState(false);
-  const [isDragging, setIsDragging]       = useState(false);
-  const [dragStart, setDragStart]         = useState(0);
-  const [dragDelta, setDragDelta]         = useState(0);
-  const [screenKey, setScreenKey]         = useState(0); // forces remount on tab switch → animation
-  const prevIndexRef                      = useRef(0);
-  const autoPlayRef                       = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(0);
+  const [dragDelta, setDragDelta] = useState(0);
+  const [screenKey, setScreenKey] = useState(0); // forces remount on tab switch → animation
+  const prevIndexRef = useRef(0);
+  const autoPlayRef = useRef(null);
 
   /* ── HELPERS ── */
   const triggerTabChange = (tab) => {
@@ -142,7 +142,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
       id: 'rates',
       badge: '3. Creator Rates',
       icon: 'fa-solid fa-sack-dollar',
-      title: 'Day 1 Transparent Rate Cards',
+      title: 'Day 1 Creator Rates',
       description: 'Inspect verified rate cards for videos, shoutouts, and stories with automated Day-1 escrow payment security.',
       bullets: ['Instant INR ₹ calculation', 'Zero rate-card leakage', 'Automated escrow protection'],
       ctaText: 'Book Creator Escrow',
@@ -222,7 +222,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
   };
   const onPointerUp = () => {
     if (isDragging) {
-      if (dragDelta < -60)  goToSlide(activeIndex + 1);
+      if (dragDelta < -60) goToSlide(activeIndex + 1);
       else if (dragDelta > 60) goToSlide(activeIndex - 1);
       setIsDragging(false);
       setDragDelta(0);
@@ -269,9 +269,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
               key={i}
               onClick={() => goToSlide(i)}
               style={{ background: activeIndex === i ? palette.accent : undefined, transition: 'width 0.4s ease, background 0.4s ease' }}
-              className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${
-                activeIndex === i ? 'w-8' : 'w-2.5 bg-white/30 hover:bg-white/60'
-              }`}
+              className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${activeIndex === i ? 'w-8' : 'w-2.5 bg-white/30 hover:bg-white/60'
+                }`}
             />
           ))}
         </div>
@@ -297,16 +296,15 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
           const isActive   = offset === 0;
           const isAdjacent = Math.abs(offset) === 1;
 
-          // Pixel-based X translation (card width ~860px + 40px gap → neighbours at ±460px)
-          const dragInfluence = isDragging ? dragDelta * 0.35 : 0;
-          const baseX         = offset * 460;
-          const tx            = baseX + dragInfluence;
+          const dragInfluence = isDragging ? dragDelta * 0.3 : 0;
+          const baseX  = offset * 420;
+          const tx     = baseX + dragInfluence;
 
-          const scale         = isActive ? 1 : isAdjacent ? 0.82 : 0.7;
-          const opacity       = isActive ? 1 : isAdjacent ? 0.28 : 0;
-          const rotateY       = isActive ? 0 : offset > 0 ? -12 : 12;
-          const blur          = isActive ? 0 : isAdjacent ? 5 : 10;
-          const zIdx          = isActive ? 30 : isAdjacent ? 15 : 5;
+          const scale   = isActive ? 1 : isAdjacent ? 0.86 : 0.72;
+          const opacity = isActive ? 1 : isAdjacent ? 0.22 : 0;
+          const rotateY = isActive ? 0 : offset > 0 ? -8 : 8;
+          const blur    = isActive ? 0 : isAdjacent ? 4 : 10;
+          const zIdx    = isActive ? 30 : isAdjacent ? 15 : 5;
 
           return (
             <div
@@ -319,8 +317,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                 filter: blur > 0 ? `blur(${blur}px)` : 'none',
                 zIndex: zIdx,
                 transition: isDragging
-                  ? 'opacity 0.2s ease, filter 0.2s ease'
-                  : 'transform 0.75s cubic-bezier(0.22,1,0.36,1), opacity 0.55s ease, filter 0.55s ease',
+                  ? 'opacity 0.15s ease, filter 0.15s ease'
+                  : 'transform 0.65s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.5s ease, filter 0.5s ease',
                 pointerEvents: Math.abs(offset) > 1 ? 'none' : 'auto',
                 willChange: 'transform, opacity',
               }}
@@ -602,11 +600,11 @@ function PhoneMockup({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <div className="w-6 h-6 rounded-full p-0.5 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <div className="w-full h-full rounded-full bg-[#0d0a15] flex items-center justify-center text-[8px] font-bold text-white">U1</div>
+                      <div className="w-full h-full rounded-full bg-[#0d0a15] flex items-center justify-center text-[8px] font-bold text-white">PK</div>
                     </div>
                     <div>
-                      <p className="font-bold text-[9px]">user_name_1</p>
-                      <p className="text-[7px] text-gray-500 font-light">3h ago</p>
+                      <p className="font-bold text-[9px]">princekuma3067 💻</p>
+                      <p className="text-[7px] text-gray-500 font-light">Just now</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 bg-pink-500/15 text-pink-500 border border-pink-500/20 px-1.5 py-0.5 rounded-full text-[6.5px] font-bold uppercase">
@@ -682,47 +680,106 @@ function PhoneMockup({
               </div>
             </div>
           )}
-
-          {/* CHATS */}
           {activeTab === 'chats' && (
-            <div className="flex-1 overflow-y-auto px-2.5 py-2 flex flex-col justify-between text-left">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center border-b border-white/10 pb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-[8px] font-bold">OX</div>
-                    <div>
-                      <p className="text-[9px] font-bold">Omnexia Official</p>
-                      <span className="text-[6.5px] text-emerald-400 font-mono">Encrypted • Active</span>
-                    </div>
-                  </div>
-                  <i className="fa-solid fa-shield-halved text-emerald-400 text-[9px]" />
-                </div>
+            <div className="flex-1 flex flex-col text-left" style={{ minHeight: 0 }}>
 
-                <div className="space-y-1.5 max-h-[190px] overflow-y-auto pr-1">
-                  {chatMessages.map((msg) => (
-                    <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
-                      <div className={`max-w-[85%] p-1.5 rounded-xl text-[8.5px] ${msg.sender === 'me' ? 'text-white' : 'bg-white/10 text-gray-200'}`}
-                        style={msg.sender === 'me' ? { background: palette.accent } : {}}
-                      >
-                        {msg.isVoice ? `🎙️ Voice Note (${msg.duration})` : msg.text}
-                      </div>
-                    </div>
-                  ))}
+              {/* Chat Header */}
+              <div className="px-3 py-2 flex items-center gap-2 border-b border-white/8 bg-[#0a0812] shrink-0">
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-[9px] font-extrabold text-white shadow-lg">OX</div>
+                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-[#0a0812]" />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9.5px] font-bold text-white">Omnexia Official</p>
+                  <p className="text-[7px] text-emerald-400 font-mono">🔒 End-to-end encrypted • Online</p>
+                </div>
+                <i className="fa-solid fa-shield-halved text-emerald-400 text-[10px]" />
               </div>
 
-              <div className="flex items-center gap-1 pt-1.5 border-t border-white/10">
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-3 py-2.5 space-y-2.5 no-scrollbar">
+
+                {/* Received – date */}
+                <p className="text-[6.5px] text-gray-500 font-mono text-center">Wednesday, 11:24 AM</p>
+
+                {/* Their message */}
+                <div className="flex items-end gap-1.5">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-[6.5px] font-bold text-white shrink-0">OX</div>
+                  <div className="max-w-[78%]">
+                    <div className="bg-white/10 rounded-2xl rounded-bl-sm px-2.5 py-1.5">
+                      <p className="text-[8.5px] text-gray-100 leading-snug">Hey, welcome to Soosial! 👋</p>
+                    </div>
+                    <p className="text-[6px] text-gray-600 mt-0.5 pl-1">11:24 AM</p>
+                  </div>
+                </div>
+
+                {/* My message */}
+                <div className="flex justify-end">
+                  <div className="max-w-[78%]">
+                    <div className="px-2.5 py-1.5 rounded-2xl rounded-br-sm" style={{ background: palette.accent }}>
+                      <p className="text-[8.5px] text-white leading-snug">Hey, checking out the platform.</p>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 mt-0.5 pr-0.5">
+                      <p className="text-[6px] text-gray-600">11:26 AM</p>
+                      <i className="fa-solid fa-check-double text-[7px]" style={{ color: palette.accentLight }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Voice note from them */}
+                <div className="flex items-end gap-1.5">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-[6.5px] font-bold text-white shrink-0">OX</div>
+                  <div className="bg-white/10 rounded-2xl rounded-bl-sm px-2.5 py-1.5 flex items-center gap-2 min-w-[120px]">
+                    <button
+                      onClick={() => handlePlayVoiceComment('chat-voice', 300, 0.8)}
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-[7px] shrink-0"
+                      style={{ background: palette.accent }}
+                    >
+                      <i className={`fa-solid ${isVoicePlaying && activeVoiceId === 'chat-voice' ? 'fa-pause' : 'fa-play'}`} />
+                    </button>
+                    <div className="flex items-end gap-0.5 h-4">
+                      {[1,2.5,1.5,3,2,1.5,2.5,1].map((h,i) => (
+                        <div key={i} className="w-0.5 rounded-full" style={{ height:`${h*4}px`, background: palette.accentLight, opacity: 0.75 }} />
+                      ))}
+                    </div>
+                    <span className="text-[6.5px] text-gray-400 font-mono">0:04</span>
+                  </div>
+                </div>
+
+                {chatMessages.filter(m => m.id > 2).map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'items-end gap-1.5'}`}>
+                    {msg.sender !== 'me' && <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-[6.5px] font-bold text-white shrink-0">OX</div>}
+                    <div className="max-w-[78%]">
+                      <div className={`px-2.5 py-1.5 rounded-2xl text-[8.5px] leading-snug ${msg.sender === 'me' ? 'rounded-br-sm text-white' : 'rounded-bl-sm bg-white/10 text-gray-100'}`}
+                        style={msg.sender === 'me' ? { background: palette.accent } : {}}>
+                        {msg.isVoice ? <span className="flex items-center gap-1"><i className="fa-solid fa-microphone text-[8px]"/> Voice Note ({msg.duration})</span> : msg.text}
+                      </div>
+                      {msg.sender === 'me' && (
+                        <div className="flex items-center justify-end gap-1 mt-0.5 pr-0.5">
+                          <p className="text-[6px] text-gray-600">{msg.time}</p>
+                          <i className="fa-solid fa-check-double text-[7px]" style={{ color: palette.accentLight }} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Input Bar */}
+              <div className="px-2.5 py-2 border-t border-white/8 flex items-center gap-1.5 bg-[#0a0812] shrink-0">
+                <button onClick={handleRecordVoice}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] shrink-0 transition-colors ${isRecordingVoice ? 'bg-red-500 text-white' : 'bg-white/8 text-gray-400'}`}>
+                  <i className="fa-solid fa-microphone" />
+                </button>
                 <input
                   type="text" placeholder="Message..."
                   value={typedMessage}
                   onChange={(e) => setTypedMessage(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[8px] text-white outline-none"
+                  className="flex-1 bg-white/6 border border-white/10 rounded-full px-3 py-1 text-[8px] text-white outline-none placeholder-gray-600"
                 />
-                <button onClick={handleRecordVoice} className={`p-1.5 rounded-lg text-[9px] ${isRecordingVoice ? 'bg-red-500 text-white' : 'bg-white/10 text-gray-300'}`}>
-                  <i className="fa-solid fa-microphone" />
-                </button>
-                <button onClick={handleSendMessage} className="p-1.5 text-white rounded-lg text-[9px]"
+                <button onClick={handleSendMessage}
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] text-white shrink-0"
                   style={{ background: palette.accent }}>
                   <i className="fa-solid fa-paper-plane" />
                 </button>
@@ -806,27 +863,32 @@ function PhoneMockup({
 
         </div>
 
-        {/* Bottom nav */}
-        <div className="absolute bottom-0 left-0 w-full h-9 bg-[#0c0a14] border-t border-white/10 px-3 flex justify-between items-center z-30">
-          {[
-            { tab: 'home',    icon: 'fa-house',      color: palette.accent },
-            { tab: 'explore', icon: 'fa-compass',    color: palette.accent },
-            { tab: 'chats',   icon: 'fa-message',    color: palette.accent },
-            { tab: 'soos',    icon: 'fa-circle-play', color: palette.accent },
-            { tab: 'profile', icon: 'fa-user',       color: palette.accent },
-          ].map(({ tab, icon, color }) => (
-            <button
-              key={tab}
-              onClick={() => triggerTabChange(tab)}
-              className="text-[9px] transition-all duration-200"
-              style={{
-                color: activeTab === tab ? color : 'rgba(255,255,255,0.3)',
-                transform: activeTab === tab ? 'scale(1.2)' : 'scale(1)',
-              }}
-            >
-              <i className={`fa-solid ${icon}`} />
-            </button>
-          ))}
+        {/* Bottom nav — 4 icons matching homepage.jpeg */}
+        <div className="absolute bottom-0 left-0 w-full h-9 bg-[#0c0a14] border-t border-white/10 px-4 flex justify-between items-center z-30">
+          {/* Home */}
+          <button onClick={() => triggerTabChange('home')} className="transition-all duration-200" style={{ color: activeTab === 'home' ? palette.accent : 'rgba(255,255,255,0.3)', transform: activeTab === 'home' ? 'scale(1.2)' : 'scale(1)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </button>
+          {/* Feed/Media */}
+          <button onClick={() => triggerTabChange('explore')} className="transition-all duration-200" style={{ color: activeTab === 'explore' ? palette.accent : 'rgba(255,255,255,0.3)', transform: activeTab === 'explore' ? 'scale(1.2)' : 'scale(1)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="4" /><line x1="7" y1="12" x2="14" y2="12" /><line x1="7" y1="16" x2="11" y2="16" />
+            </svg>
+          </button>
+          {/* Chat */}
+          <button onClick={() => triggerTabChange('chats')} className="transition-all duration-200" style={{ color: activeTab === 'chats' ? palette.accent : 'rgba(255,255,255,0.3)', transform: activeTab === 'chats' ? 'scale(1.2)' : 'scale(1)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5a8.5 8.5 0 0 1 17 0z" /><line x1="8" y1="10" x2="16" y2="10" /><line x1="8" y1="14" x2="13" y2="14" />
+            </svg>
+          </button>
+          {/* Profile */}
+          <button onClick={() => triggerTabChange('profile')} className="transition-all duration-200" style={{ color: activeTab === 'profile' ? palette.accent : 'rgba(255,255,255,0.3)', transform: activeTab === 'profile' ? 'scale(1.2)' : 'scale(1)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

@@ -191,7 +191,7 @@ export default function CanvaStudio({ onBookCreator }) {
           playClickSound();
           const newCmt = {
             id: Date.now(),
-            user: 'user_name',
+            user: 'sg.creates',
             text: "Let's build the campaign! Niche set to Gaming.",
             time: 'Just now'
           };
@@ -266,7 +266,7 @@ export default function CanvaStudio({ onBookCreator }) {
     playClickSound();
     const newComment = {
       id: Date.now(),
-      user: 'user_name_1',
+      user: 'princekuma3067',
       text: newCommentText,
       time: 'Just now'
     };
@@ -403,7 +403,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   {/* Slider 1: SOOS Rate */}
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
-                      <span className="text-gray-400">ðŸŽ¥ SOOS (Short Video):</span>
+                      <span className="text-gray-400"> SOOS (Short Video):</span>
                       <span className="text-brand-orange font-bold font-mono">â‚¹{Number(soosRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
@@ -420,7 +420,7 @@ export default function CanvaStudio({ onBookCreator }) {
                   {/* Slider 2: Custom Story */}
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px]">
-                      <span className="text-gray-400">ðŸ“¸ Custom Story:</span>
+                      <span className="text-gray-400"> Custom Story:</span>
                       <span className="text-brand-pink font-bold font-mono">â‚¹{Number(storyRate).toLocaleString('en-IN')}</span>
                     </div>
                     <input
@@ -457,14 +457,14 @@ export default function CanvaStudio({ onBookCreator }) {
           </div>
 
           {/* RIGHT PANEL: CODES-RENDERED EMULATOR OF THE SCREENSHOTS */}
-          <div className="lg:col-span-7 bg-brand-darker/60 rounded-3xl border border-white/10 p-6 flex items-center justify-center relative min-h-[520px]">
-            <div className="absolute top-4 left-6 flex items-center gap-2">
+          <div className="lg:col-span-7 bg-brand-darker/60 rounded-3xl border border-white/10 p-3 sm:p-6 flex items-center justify-center relative min-h-[480px] sm:min-h-[520px] overflow-hidden">
+            <div className="absolute top-4 left-6 flex items-center gap-2 z-30">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="text-xs text-gray-400 tracking-wider">UI Simulation Sandbox</span>
             </div>
 
             {/* Simulated Handheld Device Shell */}
-            <div className="relative mockup-container w-[330px] h-[610px] bg-[#07050a] border-[8px] border-white/10 rounded-[44px] overflow-hidden transition-all duration-300">
+            <div className="relative mockup-container w-[285px] xs:w-[320px] sm:w-[330px] h-[570px] xs:h-[600px] sm:h-[610px] bg-[#07050a] border-[6px] sm:border-[8px] border-white/10 rounded-[36px] sm:rounded-[44px] overflow-hidden transition-all duration-300 shrink-0 my-4 sm:my-0">
 
               {/* VIDEO PLAYER METRICS OVERLAY DURING WALKTHROUGH */}
               {isTourActive && (

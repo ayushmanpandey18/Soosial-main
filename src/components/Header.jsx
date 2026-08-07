@@ -22,12 +22,14 @@ export default function Header() {
 
 
         {/* CTA Download Buttons */}
-        <div className="flex items-center gap-3">
-          <a href="#download-assets" className="px-4.5 py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-orange/15 border border-white/20 hover:border-brand-orange/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-black/20">
-            <i className="fa-brands fa-google-play text-brand-orange text-xs"></i> Play Store
+        <div className="flex items-center gap-2 sm:gap-3">
+          <a href="#download-assets" className="px-3 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-orange/15 border border-white/20 hover:border-brand-orange/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-black/20">
+            <i className="fa-brands fa-google-play text-brand-orange text-xs"></i>
+            <span className="hidden xs:inline">Play Store</span>
           </a>
-          <a href="#download-assets" className="px-4.5 py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-pink/15 border border-white/20 hover:border-brand-pink/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-black/20">
-            <i className="fa-brands fa-apple text-brand-pink text-xs"></i> App Store
+          <a href="#download-assets" className="px-3 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-white bg-white/10 hover:bg-brand-pink/15 border border-white/20 hover:border-brand-pink/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-black/20">
+            <i className="fa-brands fa-apple text-brand-pink text-xs"></i>
+            <span className="hidden xs:inline">App Store</span>
           </a>
         </div>
       </div>
