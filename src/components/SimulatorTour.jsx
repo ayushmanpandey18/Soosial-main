@@ -11,6 +11,11 @@ const SLIDE_PALETTES = [
   { glow: '#06b6d4', accent: '#22d3ee', accentLight: '#67e8f9' }, // Soos – cyan
 ];
 
+/* Master Animation System Constants */
+const TRANSITION_DURATION = 800; // ms (0.8s)
+const PAUSE_DURATION = 3000;      // ms (3.0s pause)
+const EASING_CURVE = 'cubic-bezier(0.25, 1, 0.35, 1)';
+
 export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
   /* ── SIMULATOR CORE STATES ── */
   const [activeTab, setActiveTab] = useState('home');
@@ -33,15 +38,22 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
   const [searchQuery, setSearchQuery] = useState('');
   const audioTimeoutRef = useRef(null);
 
-  /* ── CAROUSEL STATES ── */
+  /* ── CAROUSEL STATES & TIMING ── */
   const [activeIndex, setActiveIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragDelta, setDragDelta] = useState(0);
   const [screenKey, setScreenKey] = useState(0); // forces remount on tab switch → animation
-  const prevIndexRef = useRef(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const autoPlayRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   /* ── HELPERS ── */
   const triggerTabChange = (tab) => {
@@ -162,10 +174,15 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
 
   const total = defaultFeatures.length;
 
-  /* ── SLIDE CHANGE: sync phone tab + screenKey ── */
-  const goToSlide = useCallback((idx) => {
-    const clamped = ((idx % total) + total) % total;
-    setActiveIndex(clamped);
+  /* ── SLIDE CHANGE & TIMER SYNCHRONIZATION ── */
+  const goToSlide = useCallback((targetIndex) => {
+    const clamped = ((targetIndex % total) + total) % total;
+    setActiveIndex(current => {
+      if (current !== clamped) {
+        setPrevIndex(current);
+      }
+      return clamped;
+    });
     const tabMap = ['home', 'chats', 'profile', 'soos'];
     if (tabMap[clamped]) {
       setActiveTab(tabMap[clamped]);
@@ -183,29 +200,28 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
       { threshold: 0.05, rootMargin: '0px 0px -50px 0px' }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    // Fallback: if already in viewport on mount
     const t = setTimeout(() => setIsVisible(true), 800);
     return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); clearTimeout(t); };
   }, []);
 
-  /* ── AUTO-PLAY (4.2s interval for smooth, comfortable reading) ── */
+  /* ── SYNCHRONIZED AUTO-PLAY TIMER ── */
   const resetAutoPlay = useCallback(() => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     autoPlayRef.current = setInterval(() => {
-      setActiveIndex(prev => {
-        const next = (prev + 1) % total;
-        const tabMap = ['home', 'chats', 'profile', 'soos'];
-        if (tabMap[next]) { setActiveTab(tabMap[next]); setScreenKey(k => k + 1); }
-        return next;
-      });
-    }, 4200);
-  }, [total]);
+      goToSlide(activeIndex + 1);
+    }, PAUSE_DURATION + TRANSITION_DURATION);
+  }, [goToSlide, activeIndex]);
 
   useEffect(() => {
-    if (!isHovered && !isDragging) resetAutoPlay();
-    else if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-    return () => { if (autoPlayRef.current) clearInterval(autoPlayRef.current); };
-  }, [isHovered, isDragging, resetAutoPlay]);
+    if (!isHovered && !isDragging) {
+      resetAutoPlay();
+    } else if (autoPlayRef.current) {
+      clearInterval(autoPlayRef.current);
+    }
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [isHovered, isDragging, activeIndex, resetAutoPlay]);
 
   useEffect(() => () => { if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current); }, []);
 
@@ -222,14 +238,21 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
   };
   const onPointerUp = () => {
     if (isDragging) {
-      if (dragDelta < -60) goToSlide(activeIndex + 1);
-      else if (dragDelta > 60) goToSlide(activeIndex - 1);
+      if (dragDelta < -50) goToSlide(activeIndex + 1);
+      else if (dragDelta > 50) goToSlide(activeIndex - 1);
       setIsDragging(false);
       setDragDelta(0);
     }
   };
 
   const palette = SLIDE_PALETTES[activeIndex];
+
+  /* Responsive offset step calculator */
+  const getOffsetPx = (offset) => {
+    if (windowWidth < 640) return offset * (windowWidth * 0.84);
+    if (windowWidth < 1024) return offset * 360;
+    return offset * 460;
+  };
 
   /* ──────────────────────────────────────────────────────────
      RENDER
@@ -241,11 +264,11 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
       style={{ '--slide-glow': palette.glow, '--slide-accent': palette.accent }}
     >
 
-      {/* ── Background ambient glow (animates between slides) ── */}
-      <div className="absolute inset-0 pointer-events-none z-0 transition-all duration-700">
+      {/* ── Background ambient glow (animates smoothly between slides) ── */}
+      <div className="absolute inset-0 pointer-events-none z-0 transition-all duration-800">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[160px] opacity-[0.18]"
-          style={{ background: `radial-gradient(circle, ${palette.glow} 0%, transparent 70%)`, transition: 'background 0.8s ease' }}
+          style={{ background: `radial-gradient(circle, ${palette.glow} 0%, transparent 70%)`, transition: `background ${TRANSITION_DURATION}ms ease` }}
         />
         {/* subtle grid dots */}
         <div className="absolute inset-0 dashboard-grid opacity-30" />
@@ -254,7 +277,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
       {/* ── Header ── */}
       <div className="relative z-20 w-full max-w-6xl px-6 mb-10 flex items-center justify-between">
         <div>
-          <span className="text-xs uppercase tracking-widest font-bold" style={{ color: palette.accent, transition: 'color 0.5s ease' }}>
+          <span className="text-xs uppercase tracking-widest font-bold" style={{ color: palette.accent, transition: `color ${TRANSITION_DURATION}ms ease` }}>
             Interactive Product Showcase
           </span>
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white mt-1">
@@ -268,8 +291,11 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
             <button
               key={i}
               onClick={() => goToSlide(i)}
-              style={{ background: activeIndex === i ? palette.accent : undefined, transition: 'width 0.4s ease, background 0.4s ease' }}
-              className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${activeIndex === i ? 'w-8' : 'w-2.5 bg-white/30 hover:bg-white/60'
+              style={{
+                background: activeIndex === i ? palette.accent : undefined,
+                transition: `width ${TRANSITION_DURATION}ms ${EASING_CURVE}, background ${TRANSITION_DURATION}ms ease`
+              }}
+              className={`h-2.5 rounded-full cursor-pointer ${activeIndex === i ? 'w-8' : 'w-2.5 bg-white/30 hover:bg-white/60'
                 }`}
             />
           ))}
@@ -290,21 +316,36 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
         onTouchEnd={onPointerUp}
       >
         {defaultFeatures.map((feature, idx) => {
-          let offset = (idx - activeIndex + total) % total;
-          if (offset > Math.floor(total / 2)) offset -= total;
+          let rawDiff = idx - activeIndex;
+          let offset = ((rawDiff % total) + total) % total;
+          if (offset > total / 2) offset -= total;
+
+          // Smooth wrap-around exit math when looping forward/backward
+          if (offset === 2) {
+            const exitLeftIndex = (prevIndex - 1 + total) % total;
+            if (idx === exitLeftIndex) {
+              offset = -2;
+            }
+          }
 
           const isActive   = offset === 0;
           const isAdjacent = Math.abs(offset) === 1;
 
-          const dragInfluence = isDragging ? dragDelta * 0.3 : 0;
-          const baseX  = offset * 420;
+          const dragInfluence = isDragging ? dragDelta * 0.35 : 0;
+          const baseX  = getOffsetPx(offset);
           const tx     = baseX + dragInfluence;
 
           const scale   = isActive ? 1 : isAdjacent ? 0.86 : 0.72;
-          const opacity = isActive ? 1 : isAdjacent ? 0.22 : 0;
-          const rotateY = isActive ? 0 : offset > 0 ? -8 : 8;
-          const blur    = isActive ? 0 : isAdjacent ? 4 : 10;
+          const opacity = isActive ? 1 : isAdjacent ? 0.25 : 0;
+          const rotateY = isActive ? 0 : offset > 0 ? -6 : 6;
+          const blur    = isActive ? 0 : isAdjacent ? 3 : 12;
           const zIdx    = isActive ? 30 : isAdjacent ? 15 : 5;
+
+          const transitionStyle = isDragging
+            ? 'opacity 0.15s ease, filter 0.15s ease'
+            : Math.abs(offset) >= 2
+            ? 'none' // silent teleportation when offstage
+            : `transform ${TRANSITION_DURATION}ms ${EASING_CURVE}, opacity ${TRANSITION_DURATION}ms ${EASING_CURVE}, filter ${TRANSITION_DURATION}ms ${EASING_CURVE}`;
 
           return (
             <div
@@ -312,13 +353,11 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
               onClick={() => !isDragging && goToSlide(idx)}
               className="absolute w-[92vw] sm:w-[80vw] lg:w-[58vw] max-w-[900px] h-[580px] sm:h-[610px] lg:h-[480px] rounded-[24px] sm:rounded-[36px] cursor-pointer"
               style={{
-                transform: `translateX(${tx}px) scale(${scale}) rotateY(${rotateY}deg)`,
+                transform: `translate3d(${tx}px, 0, 0) scale3d(${scale}, ${scale}, 1) rotateY(${rotateY}deg)`,
                 opacity,
                 filter: blur > 0 ? `blur(${blur}px)` : 'none',
                 zIndex: zIdx,
-                transition: isDragging
-                  ? 'opacity 0.15s ease, filter 0.15s ease'
-                  : 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, filter 0.6s ease',
+                transition: transitionStyle,
                 pointerEvents: Math.abs(offset) > 1 ? 'none' : 'auto',
                 willChange: 'transform, opacity',
               }}
@@ -333,7 +372,7 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                   boxShadow: isActive
                     ? `0 30px 70px rgba(0,0,0,0.85), 0 0 60px ${palette.glow}30, inset 0 1px 0 rgba(255,255,255,0.06)`
                     : '0 20px 40px rgba(0,0,0,0.6)',
-                  transition: 'background 0.7s ease, box-shadow 0.7s ease',
+                  transition: `background ${TRANSITION_DURATION}ms ease, box-shadow ${TRANSITION_DURATION}ms ease, border-color ${TRANSITION_DURATION}ms ease`,
                   borderColor: isActive ? `${palette.glow}40` : 'rgba(255,255,255,0.07)',
                 }}
               >
@@ -350,8 +389,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                   className="w-full lg:w-[48%] flex flex-col justify-center items-start text-left space-y-2 sm:space-y-4 z-20 shrink-0"
                   style={{
                     opacity: isActive ? 1 : 0,
-                    transform: isActive ? 'translateY(0)' : 'translateY(12px)',
-                    transition: 'opacity 0.55s ease 0.12s, transform 0.55s ease 0.12s',
+                    transform: isActive ? 'translate3d(0, 0, 0)' : 'translate3d(0, 12px, 0)',
+                    transition: `opacity 600ms ${EASING_CURVE} 100ms, transform 600ms ${EASING_CURVE} 100ms`,
                   }}
                 >
                   {/* Badge */}
@@ -380,8 +419,8 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
                         <li key={bIdx} className="flex items-center gap-2.5 text-xs text-neutral-200 font-medium"
                           style={{
                             opacity: isActive ? 1 : 0,
-                            transform: isActive ? 'translateX(0)' : 'translateX(-8px)',
-                            transition: `opacity 0.4s ease ${0.2 + bIdx * 0.08}s, transform 0.4s ease ${0.2 + bIdx * 0.08}s`,
+                            transform: isActive ? 'translate3d(0, 0, 0)' : 'translate3d(-8px, 0, 0)',
+                            transition: `opacity 500ms ease ${120 + bIdx * 60}ms, transform 500ms ${EASING_CURVE} ${120 + bIdx * 60}ms`,
                           }}
                         >
                           <span
@@ -511,6 +550,14 @@ export default function FeatureShowcase({ onCTAClick, onBookCreator }) {
         }
         .screen-anim { animation: screenFadeIn 0.32s cubic-bezier(0.22,1,0.36,1) both; }
         .heart-pop   { animation: heartPop 0.38s ease both; }
+        @media (prefers-reduced-motion: reduce) {
+          *, ::before, ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+          }
+        }
       `}</style>
 
     </section>
@@ -540,7 +587,7 @@ function PhoneMockup({
           ? `0 40px 80px rgba(0,0,0,0.9), 0 0 60px ${palette.glow}45, 0 0 0 1px ${palette.glow}20`
           : '0 20px 40px rgba(0,0,0,0.5)',
         transform: isActive ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)',
-        transition: 'box-shadow 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1)',
+        transition: `box-shadow ${TRANSITION_DURATION}ms ease, transform ${TRANSITION_DURATION}ms ${EASING_CURVE}`,
       }}
     >
       {/* Status bar */}
