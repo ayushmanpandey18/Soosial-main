@@ -1,12 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { playDemoSound, playCustomStudioVoice, playClickSound } from '../utils/audio';
+import { playDemoSound, playClickSound } from '../utils/audio';
 
-export default function Hero({ onBookCreator }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+export default function Hero() {
   const [isAnimated, setIsAnimated] = useState(false);
-  const [payoutPopups, setPayoutPopups] = useState([]);
   const [creatorPopups, setCreatorPopups] = useState([]);
-  const [activeFilter, setActiveFilter] = useState('All');
   const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
   // Post interactions
   const [liked, setLiked] = useState(false);
@@ -14,8 +11,6 @@ export default function Hero({ onBookCreator }) {
   const [bookmarked, setBookmarked] = useState(false);
   const [shareToast, setShareToast] = useState(false);
   const [doubleTapHeart, setDoubleTapHeart] = useState(false);
-  const likeCount = liked ? 4301 : 4300;
-  const commentCount = 238;
   const handleDoubleTap = () => {
     setLiked(true);
     setDoubleTapHeart(true);
@@ -23,12 +18,6 @@ export default function Hero({ onBookCreator }) {
   };
   const headlineRef = useRef(null);
   const phoneRef = useRef(null);
-
-  const handlePlayVoice = () => {
-    setIsPlaying(true);
-    playDemoSound(330, 0.6, 'triangle');
-    setTimeout(() => setIsPlaying(false), 600);
-  };
 
   // Headline Mouse move spotlight effect
   const handleHeadlineMouseMove = (e) => {
@@ -55,24 +44,6 @@ export default function Hero({ onBookCreator }) {
     setTimeout(() => {
       setCreatorPopups(prev => prev.filter(p => p.id !== id));
     }, 1800);
-  };
-
-  // Click on "Monetize Day 1." word -> Trigger cash payout burst & studio audio
-  const handleMonetizeClick = (e) => {
-    e.stopPropagation();
-    playCustomStudioVoice();
-    const id = Date.now();
-    const amounts = ['+ ₹ 15,000 Escrow', '+ ₹ 5,000 Shoutout', '+ ₹ 25,000 Deal', '+ ₹ 10,000 Booking'];
-    const newPopup = {
-      id,
-      text: amounts[Math.floor(Math.random() * amounts.length)],
-      x: e.nativeEvent.offsetX,
-      y: e.nativeEvent.offsetY - 20
-    };
-    setPayoutPopups(prev => [...prev, newPopup]);
-    setTimeout(() => {
-      setPayoutPopups(prev => prev.filter(p => p.id !== id));
-    }, 2000);
   };
 
   useEffect(() => {
@@ -136,7 +107,7 @@ export default function Hero({ onBookCreator }) {
             {/* Click Instructions Hint Badge */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/10 text-[9.5px] text-gray-400 font-medium mb-3 opacity-80 group-hover:opacity-100 transition-opacity">
               <i className="fa-solid fa-hand-pointer text-pink-400 animate-bounce"></i>
-              <span>Click words below for instant audio & escrow demo</span>
+              <span>Click to see creator profiles</span>
             </div>
 
             {/* Main Interactive Headline */}
@@ -153,37 +124,10 @@ export default function Hero({ onBookCreator }) {
                 </span>
               </span>
               <br />
-
-              {/* 🌟 "MONETIZE DAY 1." HERO TITLE 🌟 */}
-              <span
-                onClick={handleMonetizeClick}
-                className="relative inline-block mt-2 cursor-pointer group/monetize hover:scale-[1.03] transition-transform duration-300 max-w-full"
-                title="Click to simulate instant INR Escrow Payout!"
-              >
-                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/40 via-pink-500/40 to-purple-600/40 blur-2xl opacity-70 group-hover/monetize:opacity-100 transition-opacity pointer-events-none"></span>
-
-                <span className="relative z-10 block text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black font-outfit tracking-tight bg-gradient-to-r from-orange-400 via-pink-500 to-purple-400 bg-clip-text text-transparent pb-1">
-                  Monetize Day 1.
-                </span>
-
-                <span className="absolute -top-3.5 -right-3 sm:-right-6 text-[9.5px] sm:text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black font-mono px-2 py-0.5 sm:py-1 rounded-full shadow-2xl border border-emerald-300/50 animate-bounce flex items-center gap-1">
-                  <i className="fa-solid fa-coins text-yellow-300"></i>
-                  <span>Tap ₹ Demo</span>
-                </span>
+              <span className="relative z-10 block text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black font-outfit tracking-tight bg-gradient-to-r from-orange-400 via-pink-500 to-purple-400 bg-clip-text text-transparent pb-1">
+                Connect &amp; Thrive.
               </span>
             </h1>
-
-            {/* Floating Payout Popups */}
-            {payoutPopups.map(popup => (
-              <div
-                key={popup.id}
-                className="absolute z-50 pointer-events-none animate-float-up text-emerald-400 bg-black/90 border border-emerald-500/50 px-3 py-1.5 rounded-full text-xs font-black font-mono shadow-2xl flex items-center gap-1.5"
-                style={{ left: `${popup.x}px`, top: `${popup.y}px` }}
-              >
-                <i className="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
-                <span>{popup.text}</span>
-              </div>
-            ))}
 
             {/* Floating Avatar Popups */}
             {creatorPopups.map(popup => (
@@ -196,31 +140,6 @@ export default function Hero({ onBookCreator }) {
               </div>
             ))}
 
-            {/* Interactive Niche Switcher Bar */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-4">
-              {[
-                { label: '🔥 All Features', mode: 'All' },
-                { label: '🎥 SOOS Reels', mode: 'Reels' },
-                { label: '🎙️ Vocal Feed', mode: 'Voice' },
-                { label: '💼 Day 1 Escrow', mode: 'Escrow' },
-                { label: '🛡️ Data Shield', mode: 'Shield' }
-              ].map(item => (
-                <button
-                  key={item.mode}
-                  onClick={() => {
-                    playClickSound();
-                    setActiveFilter(item.mode);
-                  }}
-                  className={`px-3 py-1 rounded-full text-[10.5px] font-bold transition-all duration-300 cursor-pointer ${activeFilter === item.mode
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/25 scale-105'
-                      : 'bg-white/5 hover:bg-white/15 text-gray-300 border border-white/10'
-                    }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
           </div>
 
           {/* Subtitle Description */}
@@ -231,18 +150,12 @@ export default function Hero({ onBookCreator }) {
           {/* Live Metrics Ticker */}
           <div className="hero-entrance-3 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 py-1">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md">
-              <span className="text-emerald-400 font-mono">₹ 100%</span> Escrow Protected
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md">
               <span className="text-brand-orange">🛡️ 0 Leak</span> Indian Server Hosting
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 backdrop-blur-md">
-              <span className="text-brand-pink">⚡ Instant</span> Vocal Feed Reactions
             </div>
           </div>
 
           {/* Value Points Grid */}
-          <div className="hero-entrance-4 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-left w-full max-w-2xl">
+          <div className="hero-entrance-4 grid grid-cols-1 gap-4 pt-1 text-left w-full max-w-2xl">
             <div className="group relative flex items-start gap-3 bg-gradient-to-br from-white/10 to-white/5 p-3.5 rounded-2xl border border-white/15 backdrop-blur-xl transition-all hover:border-brand-orange/50">
               <div className="w-9 h-9 rounded-xl bg-brand-orange/20 border border-brand-orange/40 flex items-center justify-center shrink-0">
                 <i className="fa-solid fa-shield-halved text-brand-orange text-base"></i>
@@ -255,38 +168,10 @@ export default function Hero({ onBookCreator }) {
                 <p className="text-[11px] text-gray-300 mt-0.5 font-light leading-snug">100% local hosting within India protecting your chats & files.</p>
               </div>
             </div>
-
-            <div className="group relative flex items-start gap-3 bg-gradient-to-br from-white/10 to-white/5 p-3.5 rounded-2xl border border-white/15 backdrop-blur-xl transition-all hover:border-brand-pink/50">
-              <div className="w-9 h-9 rounded-xl bg-brand-pink/20 border border-brand-pink/40 flex items-center justify-center shrink-0">
-                <i className="fa-solid fa-microphone text-brand-pink text-base"></i>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-white text-xs font-outfit">Infinite Voice Comments</h4>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handlePlayVoice(); }}
-                    className="px-2 py-0.5 rounded bg-brand-pink/20 border border-brand-pink/40 text-white text-[8px] font-bold flex items-center gap-1"
-                  >
-                    <i className={`fa-solid ${isPlaying ? 'fa-volume-high animate-bounce' : 'fa-play'}`}></i> Test
-                  </button>
-                </div>
-                <p className="text-[11px] text-gray-300 mt-0.5 font-light leading-snug">Comment using vocal notes. Express real human sentiment.</p>
-              </div>
-            </div>
           </div>
 
-          {/* App Store Downloads & Direct CTA */}
+          {/* App Store Downloads */}
           <div className="hero-entrance-4 flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2" id="download-assets">
-            <button
-              onClick={() => onBookCreator && onBookCreator('Ganesh KGP', '1x Dedicated SOOS', 15000)}
-              className="px-5 py-3 rounded-xl text-white font-black text-xs transition-all hover:scale-105 cursor-pointer flex items-center gap-2 shadow-2xl border border-white/20"
-              style={{ background: 'linear-gradient(135deg, #ff2a85 0%, #ff5e00 50%, #8a2be2 100%)' }}
-            >
-              <i className="fa-solid fa-bolt text-yellow-300 animate-pulse"></i>
-              <span>Book Creator Escrow</span>
-              <i className="fa-solid fa-arrow-right text-xs"></i>
-            </button>
-
             <a
               href="https://play.google.com/store/apps/details?id=com.omnexiatechnology.soosial&pcampaignid=web_share"
               target="_blank"

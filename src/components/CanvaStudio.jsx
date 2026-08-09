@@ -281,7 +281,7 @@ export default function CanvaStudio({ onBookCreator }) {
 
   return (
     <section id="canva-preview" className="py-24 bg-brand-dark relative dashboard-grid border-t border-white/5">
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[130px] animate-pulse-slow"></div>
+      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[130px] animate-pulse-slow pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
@@ -894,9 +894,9 @@ export default function CanvaStudio({ onBookCreator }) {
                           <h5 className="text-[9.5px] font-bold">How collaboration works</h5>
                         </div>
                         <ul className="text-[7.5px] text-gray-400 space-y-1.5 list-none pl-1 leading-normal font-light">
-                          <li>â€¢ Your active domain controls where businesses discover you.</li>
-                          <li>â€¢ Pricing details (SOOS: <span className="text-brand-orange font-bold">â‚¹{soosRate}</span>, Story: <span className="text-brand-pink font-bold">â‚¹{storyRate}</span>) can be updated anytime.</li>
-                          <li>â€¢ Accepted offers move into secure escrow workflows until complete.</li>
+                          <li> Your active domain controls where businesses discover you.</li>
+                          <li> Pricing details (SOOS: <span className="text-brand-orange font-bold">â{soosRate}</span>, Story: <span className="text-brand-pink font-bold">â‚¹{storyRate}</span>) can be updated anytime.</li>
+                          <li> Accepted offers move into secure escrow workflows until complete.</li>
                         </ul>
                       </div>
                     </div>
@@ -1085,7 +1085,7 @@ export default function CanvaStudio({ onBookCreator }) {
                 {/* Subtitle banner overlay at bottom during Automated tour */}
                 {isTourActive && tourSubtitle && (
                   <div className="absolute bottom-[78px] left-3 right-3 bg-black/95 backdrop-blur-md border border-white/10 p-2.5 rounded-xl text-[8px] text-gray-200 leading-normal text-left font-medium z-45 animate-fade-in shadow-xl shadow-black/45">
-                    <span className="text-[7.5px] text-brand-pink font-bold block mb-0.5 uppercase tracking-wide">ðŸ’¡ Walkthrough Subtitles:</span>
+                    <span className="text-[7.5px] text-brand-pink font-bold block mb-0.5 uppercase tracking-wide">Walkthrough Subtitles:</span>
                     {tourSubtitle}
                   </div>
                 )}

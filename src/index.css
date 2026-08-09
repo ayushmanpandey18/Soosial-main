@@ -81,16 +81,22 @@ html, body {
   pointer-events: none;
 }
 
-/* Custom Scrollbar Styles */
+/* ─── Custom Scrollbar ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #06040a;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #f97316, #ec4899);
+  background: linear-gradient(to bottom, #ff5e00, #ff2a85, #8a2be2);
   border-radius: 99px;
+  box-shadow: 0 0 8px rgba(255, 42, 133, 0.5);
+  transition: background 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #ff2a85, #8a2be2);
+  box-shadow: 0 0 14px rgba(138, 43, 226, 0.7);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -99,6 +105,181 @@ html, body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ─── Scroll Progress Bar ──────────────────────────────────────────────────── */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #ff5e00, #ff2a85, #8a2be2);
+  box-shadow: 0 0 10px rgba(255, 42, 133, 0.8), 0 0 20px rgba(138, 43, 226, 0.5);
+  z-index: 9999;
+  border-radius: 0 2px 2px 0;
+  transition: width 0.05s linear;
+}
+
+/* ─── Custom Cursor ────────────────────────────────────────────────────────── */
+* {
+  cursor: none !important;
+}
+
+#cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #ff5e00, #ff2a85);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, background 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 42, 133, 0.9), 0 0 20px rgba(255, 94, 0, 0.5);
+}
+
+#cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(255, 42, 133, 0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease, width 0.25s ease, height 0.25s ease, border-color 0.3s ease, opacity 0.25s ease;
+  box-shadow: 0 0 12px rgba(138, 43, 226, 0.3);
+}
+
+/* Cursor hover state — applied via JS */
+body.cursor-hover #cursor-dot {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #ff2a85, #8a2be2);
+  box-shadow: 0 0 18px rgba(138, 43, 226, 0.9), 0 0 35px rgba(255, 42, 133, 0.5);
+}
+body.cursor-hover #cursor-ring {
+  width: 54px;
+  height: 54px;
+  border-color: rgba(138, 43, 226, 0.65);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.45);
+}
+
+/* Cursor click state */
+body.cursor-click #cursor-dot {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 22px rgba(255, 42, 133, 1), 0 0 40px rgba(255, 94, 0, 0.7);
+}
+body.cursor-click #cursor-ring {
+  width: 44px;
+  height: 44px;
+  opacity: 0.4;
+}
+
+/* ─── Hover orbit star ─────────────────────────────────────────────────────── */
+#cursor-orbit-star {
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  color: #ff2a85;
+  pointer-events: none;
+  z-index: 99997;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  text-shadow: 0 0 8px rgba(255, 42, 133, 0.9), 0 0 18px rgba(138, 43, 226, 0.6);
+  transition: opacity 0.2s ease;
+  will-change: left, top;
+}
+
+/* ─── Click burst particles ────────────────────────────────────────────────── */
+.cursor-burst-particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99996;
+  transform: translate(-50%, -50%);
+  animation: burst-fly 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes burst-fly {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--dist)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ─── Scroll sparks ────────────────────────────────────────────────────────── */
+.cursor-scroll-spark {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99995;
+  transform: translate(-50%, -50%);
+  animation: spark-fade 0.45s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes spark-fade {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(
+      calc(-50% + calc((var(--spark-dx, 1)) * 14px)),
+      calc(-50% + calc((var(--spark-dy, 1)) * 14px))
+    ) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Ring pulse while scrolling */
+body.cursor-scrolling #cursor-ring {
+  animation: ring-scroll-pulse 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes ring-scroll-pulse {
+  from {
+    box-shadow: 0 0 10px rgba(255, 42, 133, 0.3);
+    border-color: rgba(255, 42, 133, 0.45);
+  }
+  to {
+    box-shadow: 0 0 22px rgba(138, 43, 226, 0.7), 0 0 40px rgba(255, 42, 133, 0.3);
+    border-color: rgba(138, 43, 226, 0.8);
+  }
+}
+
+/* ─── Scroll-triggered section fade-in ────────────────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes scrollbar-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(255, 42, 133, 0.4); }
+  50%       { box-shadow: 0 0 14px rgba(138, 43, 226, 0.7); }
 }
 
 /* Dashboard Pattern Grid */
