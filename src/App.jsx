@@ -7,6 +7,7 @@ import SimulatorTour from './components/SimulatorTour';
 import Features from './components/Features';
 import CheckoutModal from './components/CheckoutModal';
 import Footer from './components/footer';
+import ScrollCursorEffects from './components/ScrollCursorEffects';
 
 function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -23,12 +24,14 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-darker text-gray-100 font-sans selection:bg-brand-pink selection:text-white">
+      {/* Scroll progress bar + custom cursor */}
+      <ScrollCursorEffects />
       <div className="flex-1">
         {/* Sticky Header */}
         <Header />
 
         {/* Hero Section */}
-        <Hero onBookCreator={handleBookCreator} />
+        <Hero />
 
         {/* Creator Collaboration Workspace */}
         <CanvaStudio onBookCreator={handleBookCreator} />
