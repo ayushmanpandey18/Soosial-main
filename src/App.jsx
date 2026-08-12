@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import CanvaStudio from './components/CanvaStudio';
 import SimulatorTour from './components/SimulatorTour';
 import Features from './components/Features';
+import ExploreSoosial from './components/ExploreSoosial';
 import CheckoutModal from './components/CheckoutModal';
 import Footer from './components/footer';
 import ScrollCursorEffects from './components/ScrollCursorEffects';
@@ -38,6 +39,9 @@ function App() {
 
         {/* Features & Narrative Pillars */}
         <Features />
+
+        {/* Explore Soosial — Full App Screen Walkthrough */}
+        <ExploreSoosial />
 
         {/* Simulator Section */}
         <SimulatorTour onBookCreator={handleBookCreator} />
