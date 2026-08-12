@@ -39,12 +39,12 @@ export default function CanvaStudio({ onBookCreator }) {
   // Comments state
   const [commentsList, setCommentsList] = useState([
     { id: 1, user: 'sonalikapoor3708', text: 'Mast hai!', time: '2 days' },
-    { id: 2, user: 'nehatiwari8097', text: 'â¤ï¸ nice one', time: '2 days' },
+    { id: 2, user: 'nehatiwari8097', text: 'nice one', time: '2 days' },
     { id: 3, user: 'divyasharma9526', text: 'Ekdum mast!', time: '2 days' },
     { id: 4, user: 'vishalmenon8649', text: 'Splendid!', time: '2 days' },
     { id: 5, user: 'abhishekpillai8580', text: 'So nice!', time: '2 days' },
     { id: 6, user: 'tanvibhatt2359', text: 'Too good yaar!', time: '2 days' },
-    { id: 7, user: 'manojbhatt2490', text: 'ðŸ˜ awesome', time: '2 days' }
+    { id: 7, user: 'manojbhatt2490', text: ' awesome', time: '2 days' }
   ]);
   const [newCommentText, setNewCommentText] = useState('');
   const commentsEndRef = useRef(null);
